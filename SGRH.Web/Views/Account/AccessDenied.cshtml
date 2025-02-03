@@ -1,0 +1,49 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acceso Denegado - SGHR</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h2 class="card-title display-4 text-danger">Acceso Denegado</h2>
+                        <p class="card-text">Lo sentimos, no tienes permiso para acceder a este recurso.</p>
+                        <p class="card-text">Por favor, inicia sesión con una cuenta autorizada.</p>
+                        <hr />
+                        <img src="https://www.hostinger.es/tutoriales/wp-content/uploads/sites/7/2017/08/error-403-2048x899.jpg" class="card-img-top" alt="Imagen de acceso denegado">
+                        <p id="countdown" class="mt-3"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var countdown = 10;
+            setInterval(function () {
+                countdown--;
+                $("#countdown").text("Serás redirigido al inicio de sesión en " + countdown + " segundos.");
+                if (countdown <= 0) {
+                    clearInterval(countdown);
+                    window.location.href = "/Account/Login"; // Redirigir al inicio de sesión
+                }
+            }, 1000);
+        });
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

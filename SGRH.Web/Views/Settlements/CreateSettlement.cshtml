@@ -1,0 +1,398 @@
+﻿@model SGRH.Web.Models.ViewModels.CreateSettlementViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Liquidaciones";
+    ViewBag.NombreUbicacion = "Registrar Liquidación";
+    ViewData["Title"] = "Registrar Liquidación";
+}
+
+<hr />
+<div class="container">
+    <form asp-action="CreateSettlement" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Registrar Liquidación</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" asp-for="LayoffId" class="form-control" />
+
+                        <div class="form-group">
+                            <label for="name">Empleado:</label>
+                            <input type="text" class="form-control" id="name" name="name"  value="@Model.Layoff.PersonalAction.User.FullName" readonly />
+                           </div>
+
+                        <div class="form-group">
+                            <label for="name">Fecha de Contratación:</label>
+                            <input type="text" class="form-control" id="hiredDate" name="hiredDate" value="@Model.Layoff.PersonalAction.User.HiredDate?.ToShortDateString()" readonly />
+                        </div>
+
+                        @if (Model.ShowCalculatedlEntry)
+                        {
+                            <div class="form-group">
+                                <label for="salary1">Salario mes 1:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary1" name="salary1" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary2">Salario mes 2:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary2" name="salary2" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary3">Salario mes 3:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary3" name="salary3" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary4">Salario mes 4:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary4" name="salary4" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary5">Salario mes 5:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary5" name="salary5" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary6">Salario mes 6:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary6" name="salary6" />
+                            </div>
+                            <div class="form-group">
+                                <label for="salary7">Salario mes 7:</label>
+                                <input type="number" step="any" class="form-control manual-entry" id="salary7" name="salary7" />
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <label asp-for="AvgLast6MonthsSalary" class="control-label"></label>
+                            <input asp-for="AvgLast6MonthsSalary" type="number" step="any" class="form-control" id="AvgLast6MonthsSalary" name="AvgLast6MonthsSalary" readonly />
+                            <span asp-validation-for="AvgLast6MonthsSalary" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DailyAvgLast6Months" class="control-label"></label>
+                            <input asp-for="DailyAvgLast6Months" type="number" step="any" class="form-control" id="DailyAvgLast6Months" name="DailyAvgLast6Months" readonly oninput="this.value = parseFloat(this.value).toFixed(2);" />
+                            <span asp-validation-for="DailyAvgLast6Months" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label asp-for="Bonus" class="control-label"></label>
+                            <input asp-for="Bonus" type="number" step="any" class="form-control" id="Bonus" name="Bonus" readonly />
+                            <span asp-validation-for="Bonus" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="UnenjoyedVacation" class="control-label"></label>
+                            <input asp-for="UnenjoyedVacation" class="form-control" id="UnenjoyedVacation" name="UnenjoyedVacation" readonly />
+                            <span asp-validation-for="UnenjoyedVacation" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="UnenjoyedVacationAmount" class="control-label"></label>
+                            <input asp-for="UnenjoyedVacationAmount" type="number" step="any" class="form-control" id="UnenjoyedVacationAmount" name="UnenjoyedVacationAmount" readonly />
+                            <span asp-validation-for="UnenjoyedVacationAmount" class="text-danger"></span>
+                        </div>
+
+                        @if (Model.Layoff.HasEmployerResponsibility)
+                        {
+                            <div class="form-group">
+                                <label asp-for="Notice" class="control-label"></label>
+                                <input asp-for="Notice" class="form-control" id="Notice" name="Notice" />
+                                <span asp-validation-for="Notice" class="text-danger"></span>
+                                <a href="#" class="btn btn-info my-2" data-toggle="modal" data-target="#helpModalPreaviso">¿Qué es esto?</a>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="NoticeAmount" class="control-label"></label>
+                                <input asp-for="NoticeAmount" type="number" step="any" class="form-control" id="NoticeAmount" name="NoticeAmount" readonly />
+                                <span asp-validation-for="NoticeAmount" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Severance" class="control-label"></label>
+                                <input asp-for="Severance" class="form-control" id="Severance" name="Severance" />
+                                <span asp-validation-for="Severance" class="text-danger"></span>
+                                <a href="#" class="btn btn-info my-2" data-toggle="modal" data-target="#helpModalCesantia">Ver detalle de cesantía</a>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SeveranceAmount" class="control-label"></label>
+                                <input asp-for="SeveranceAmount" type="number" step="any" class="form-control" id="SeveranceAmount" name="SeveranceAmount" readonly />
+                                <span asp-validation-for="SeveranceAmount" class="text-danger"></span>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <label asp-for="TotalSettlement" class="control-label"></label>
+                            <input asp-for="TotalSettlement" type="number" step="any" class="form-control" id="TotalSettlement" name="TotalSettlement" readonly />
+                            <span asp-validation-for="TotalSettlement" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-success m-2">Crear Liquidación</button>
+                <a href="javascript:history.back()" class="btn btn-secondary m-2">Volver</a>
+                <button type="button" class="btn btn-warning m-2" id="calculateButton">Calcular</button>
+                <button type="button" class="btn btn-dark m-2" id="clearButton">Limpiar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<!-- Modal para el preaviso -->
+<div class="modal fade" id="helpModalPreaviso" tabindex="-1" role="dialog" aria-labelledby="helpModalPreavisoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalPreavisoLabel">Ayuda - Preaviso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Texto de ayuda para el preaviso -->
+                <p>¿Qué es el preaviso?</p>
+                <p>
+                    Es un aviso previo que la persona trabajadora debe dar a la persona empleadora cuando renuncia, o la persona empleadora debe darle a la persona trabajadora cuando lo va a despedir sin tener justa causa para hacerlo.
+                </p>
+                <p>Este derecho solamente se otorga en los contratos por tiempo indefinido y se aplica de la siguiente forma:</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tiempo</th>
+                            <th>Días de preaviso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Antes de los 3 meses</td>
+                            <td>No hay obligación de dar preaviso pues se trata del periodo de prueba.</td>
+                        </tr>
+                        <tr>
+                            <td>Entre 3 y 6 meses</td>
+                            <td>1 semana de preaviso</td>
+                        </tr>
+                        <tr>
+                            <td>Entre 6 y 1 año</td>
+                            <td>15 días de preaviso</td>
+                        </tr>
+                        <tr>
+                            <td>Después de 1 año</td>
+                            <td>1 mes de preaviso</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>El preaviso debe darse en tiempo y solamente en casos especiales se puede dar en dinero</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para la cesantía -->
+<div class="modal fade" id="helpModalCesantia" tabindex="-1" role="dialog" aria-labelledby="helpModalCesantiaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalCesantiaLabel">Ayuda - Cesantía</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>La persona empleadora deberá pagar un auxilio de cesantía de acuerdo con las siguientes reglas:</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Días por año laborado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Entre 3 y 6 meses</td>
+                            <td>7 días</td>
+                        </tr>
+                        <tr>
+                            <td>Entre 6 meses y 1 año</td>
+                            <td>14 días</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>19.5 días por año laborado</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>20 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>20.5 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>21 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>21.24 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>21.5 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>22 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>22 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>22 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>21.5 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>21 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>20.5 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <tr>
+                            <td>13 y siguientes</td>
+                            <td>20 días por año laborado o fracción superior a seis meses</td>
+                        </tr>
+                        <!-- Agrega aquí las demás filas de la tabla con los años y días correspondientes -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#salary1').val('0');
+            $('#salary2').val('0');
+            $('#salary3').val('0');
+            $('#salary4').val('0');
+            $('#salary5').val('0');
+            $('#salary6').val('0');
+            $('#salary7').val('0');
+            $('#Bonus').val('0');
+            $('#UnenjoyedVacationAmount').val('0');
+            $('#NoticeAmount').val('0');
+            $('#SeveranceAmount').val('0');
+            $('#TotalSettlement').val('0');
+        });
+    </script>
+    <script>
+        // Evento para el botón de cálculo
+        $(document).on('click', '#calculateButton', function () {
+            // Verificar si los campos de salario promedio y salario diario promedio están vacíos
+            if ($('#AvgLast6MonthsSalary').val() == "0" || $('#DailyAvgLast6Months').val() == "0") {
+                // Si están vacíos, habilitar los campos de entrada manual
+                calculateFromInputs();
+            } else {
+                // Utilizar los valores existentes para los cálculos
+                calculateFromModel();
+            }
+            showSuccessAlert('Los cálculos se realizaron correctamente, favor validar.');
+        });
+
+        // Evento para el botón de limpiar
+        $(document).on('click', '#clearButton', function () {
+            $('.manual-entry').val('');
+            $('#salary1').val('0');
+            $('#salary2').val('0');
+            $('#salary3').val('0');
+            $('#salary4').val('0');
+            $('#salary5').val('0');
+            $('#salary6').val('0');
+            $('#salary7').val('0');
+            $('#Bonus').val('0');
+            $('#UnenjoyedVacationAmount').val('0');
+            $('#Notice').val('0');
+            $('#NoticeAmount').val('0');
+            $('#Severance').val('0');
+            $('#SeveranceAmount').val('0');
+            $('#TotalSettlement').val('0');
+            $('#AvgLast6MonthsSalary').val('0');
+            $('#DailyAvgLast6Months').val('0');
+        });
+
+        // Función para calcular los valores en base a los inputs manuales
+        function calculateFromInputs() {
+            // Obtener los valores de los campos
+            var salaries = [];
+            $('.manual-entry').each(function () {
+                var salary = parseFloat($(this).val() || 0);
+                if (salary > 0) {
+                    salaries.push(salary);
+                }
+            });
+            
+
+            // Verificar si no hay salarios válidos
+            if (salaries.length === 0) {
+                showErrorAlert('Todos los salarios están en 0. Por favor, ingrese al menos un salario válido.');
+                return;
+            }
+
+            // Calcular el AvgLast6MonthsSalary
+            var avgLast6MonthsSalary = salaries.reduce((a, b) => a + b, 0) / salaries.length;
+
+            // Calcular el DailyAvgLast6Months
+            var dailyAvgLast6Months = avgLast6MonthsSalary / 30;
+
+            // Actualizar valores del modelo
+            $('#AvgLast6MonthsSalary').val(avgLast6MonthsSalary.toFixed(2));
+            $('#DailyAvgLast6Months').val(dailyAvgLast6Months.toFixed(2));
+
+            // Calcular los valores restantes
+            calculateFromModel();
+        }
+
+
+        // Función para calcular los valores en base a los valores del modelo
+        function calculateFromModel() {
+            // Obtener los valores necesarios para los cálculos
+            var avgLast6MonthsSalary = parseFloat($('#AvgLast6MonthsSalary').val()) || 0;
+            var dailyAvgLast6Months = parseFloat($('#DailyAvgLast6Months').val()) || 0;
+
+            // Calcular el aguinaldo
+            var bonus = parseFloat($('#AvgLast6MonthsSalary').val()) / 12 || 0;
+
+            // Calcular las vacaciones
+            var unenjoyedVacationAmount = parseFloat($('#UnenjoyedVacation').val()) * parseFloat($('#DailyAvgLast6Months').val()) || 0;
+
+            // Calcular el preaviso
+            var noticeAmount = parseFloat($('#Notice').val()) * parseFloat($('#DailyAvgLast6Months').val()) || 0;
+
+            // Calcular la cesantía
+            var severanceAmount = parseFloat($('#Severance').val()) * parseFloat($('#DailyAvgLast6Months').val()) || 0;
+
+            // Calcular la liquidación total
+            var totalSettlement = bonus + unenjoyedVacationAmount + noticeAmount + severanceAmount;
+
+            // Mostrar los resultados en los campos correspondientes
+            $('#Bonus').val(bonus.toFixed(2));
+            $('#UnenjoyedVacationAmount').val(unenjoyedVacationAmount.toFixed(2));
+            $('#NoticeAmount').val(noticeAmount.toFixed(2));
+            $('#SeveranceAmount').val(severanceAmount.toFixed(2));
+            $('#TotalSettlement').val(totalSettlement.toFixed(2));
+        }
+    </script>
+}
+

@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/SgrhUAT/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsSGRHDB_1127EEE46B",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/sgrhdbserver/databases/SGRH",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:SGRHDB",
+      "dynamicId": null
+    }
+  }
+}

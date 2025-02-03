@@ -1,0 +1,86 @@
+﻿@model SGRH.Web.Models.AbsenceViewModel
+
+@{
+    ViewData["Title"] = "Registrar Ausencia";
+}
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Registrar Ausencia</strong></h3>
+                </div>
+                <form method="post" asp-action="RegisterAbsencePost" enctype="multipart/form-data" onsubmit="sendForm(event)" id="myForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="Category">Categoría de ausencia:</label>
+                            <select asp-for="Category" class="form-control" asp-items="@(new SelectList(ViewBag.Categories, "Value", "Text"))">
+                                <option value="">Seleccione una categoría</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="StartDate">Fecha de inicio:</label>
+                            <input asp-for="StartDate" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EndDate">Fecha final:</label>
+                            <input asp-for="EndDate" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Comments">Comentarios/Justificación:</label>
+                            <textarea asp-for="Comments" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Comments" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Documentation" class="control-label">Documentación (opcional):</label>
+                            <div class="custom-file">
+                                <input asp-for="Documentation" type="file" class="custom-file-input" id="customFile" multiple onchange="updateFileNameLabel(this)">
+                                <label class="custom-file-label" for="customFile" id="customFileLabel">Seleccionar archivo(s)</label>
+                            </div>
+                            <span asp-validation-for="Documentation" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-success" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres registrar la ausencia?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+    <script>
+        function updateFileNameLabel(input) {
+            var fileName = input.files.length > 1 ? input.files.length + ' archivos seleccionados' : input.files[0].name;
+            document.getElementById('customFileLabel').innerText = fileName;
+        }
+    </script>
+}

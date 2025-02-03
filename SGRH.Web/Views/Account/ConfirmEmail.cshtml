@@ -1,0 +1,26 @@
+﻿@using SGRH.Web.Views.Account
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirmar email";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Confirmar Email</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                    {
+                        <div class="alert alert-info" role="alert">
+                            @Model.StatusMessage
+                        </div>
+                    }
+
+                    <p>Has confirmado tu dirección de correo electrónico con éxito. Ahora puedes cambiar tu contraseña temporal.</p>
+                    <a asp-action="ResetPassword" asp-controller="Account" asp-route-username="@Model.UserName" class="btn btn-primary">Cambiar Contraseña</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

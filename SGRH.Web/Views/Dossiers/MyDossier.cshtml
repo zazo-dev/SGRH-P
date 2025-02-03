@@ -1,0 +1,85 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Dossier>
+
+@{
+    ViewData["Title"] = "Listado de Expedientes";
+    ViewBag.Titulo = "Gestión de Expedientes";
+    ViewBag.NombreUbicación = "Mi Expediente";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Documentos de mi Expediente</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+            {
+                <a class="btn btn-success" asp-action="Create">
+                    <i class="fas fa-plus"></i> Agregar Documento
+                </a>
+            }
+        </p>
+        <table id="example1" class="table  table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DocumentType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>Acción</th>
+                    @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                    {
+                        <th>Acción</th>
+                        <th>Acción</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DocumentType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @item.Date?.ToString("dd/MM/yyyy")
+                        </td>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                        {
+                            <td>
+                                <div class="btn-group my-1">
+                                    <a asp-action="Edit" asp-route-id="@item.Id_Record" class="btn btn-info">Editar</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group my-1">
+                                    <a asp-action="Delete" asp-route-id="@item.Id_Record" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </td>
+                        }
+                        <td>
+                            <div class="btn-group my-1">
+                                <a asp-action="Details" asp-route-id="@item.Id_Record" class="btn btn-secondary">Detalles</a>
+                            </div>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>

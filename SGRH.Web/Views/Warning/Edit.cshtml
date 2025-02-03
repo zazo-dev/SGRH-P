@@ -1,0 +1,57 @@
+﻿@model SGRH.Web.Models.WarningViewModel
+@{
+    ViewData["Title"] = "Edit";
+}
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Editar Amonestación</strong></h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Edit">
+                        <input type="hidden" asp-for="Id_Warnings" />
+                        <div class="form-group">
+                            <label asp-for="Reason" class="control-label">Motivo:</label>
+                            <input asp-for="Reason" class="form-control" />
+                            <span asp-validation-for="Reason" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Observations" class="control-label">Observaciones:</label>
+                            <textarea asp-for="Observations" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Observations" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" value="Editar" class="btn btn-info" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres editar la amonestación?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

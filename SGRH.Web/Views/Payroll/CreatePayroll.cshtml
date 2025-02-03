@@ -1,0 +1,398 @@
+﻿@model SGRH.Web.Models.CreatePayrollViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Nóminas";
+    ViewBag.NombreUbicacion = "Registrar Nómina";
+    ViewData["Title"] = "Registrar Nómina";
+}
+
+<hr />
+<div class="container py-2">
+    <form asp-action="CreatePayroll" method="post" id="myForm" onsubmit="sendForm(event)">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Registrar Nómina</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="dni">Buscar Usuario:</label>
+                            <div class="d-flex align-items-center">
+                                <input type="text" id="dni" name="dni" class="form-control" min="3" maxlength="35" />
+                                <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#infoModal">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name">Nombre:</label>
+                            <input type="text" class="form-control" id="name" name="name" readonly />
+                            <select class="form-control" id="name-select" name="name" style="display:none;"></select>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <input asp-for="UserId" type="hidden" id="userId" name="userId" />
+                            <input asp-for="FullName" type="hidden" id="fullName" name="fullName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department">Departamento:</label>
+                            <input type="text" class="form-control" id="department" name="department" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Salario Base:</label>
+                            <input type="text" class="form-control" id="baseSalary" name="baseSalary" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Jornada Laboral:</label>
+                            <input type="text" class="form-control" id="periodName" name="periodName" readonly />
+                        </div>
+
+                        <div id="error-message" class="text-danger font-weight-bold" style="display: none;"></div>
+
+                        <div class="form-group">
+                            <label asp-for="PayrollPeriodId" class="control-label">Periodo de pago:</label>
+                            <select asp-for="PayrollPeriodId" class="form-control">
+                                <option value="">Seleccione un periodo de pago</option>
+                                @foreach (var period in Model.PayrollPeriods)
+                                {
+                                    <option value="@period.Id">@period.PeriodName</option>
+                                }
+                            </select>
+                            <div class="text-danger">@Html.ValidationMessageFor(model => model.PayrollPeriodId)</div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PayrollFrequency" class="control-label">Frecuencia de Nómina:</label>
+                            <select asp-for="PayrollFrequency" class="form-control">
+                                <option value="">Seleccione una frecuencia</option>
+                                <option value="Quincenal">Quincenal</option>
+                                <option value="Mensual">Mensual</option>
+                            </select>
+                            <div class="text-danger">@Html.ValidationMessageFor(model => model.PayrollFrequency)</div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OrdinarySalary" class="control-label">Salario Ordinario:</label>
+                            <input asp-for="OrdinarySalary" type="number" step="any" class="form-control" readonly name="OrdinarySalary" />
+                            <span asp-validation-for="OrdinarySalary" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="OtHours" class="control-label">Cantidad de Horas Extra:</label>
+                            <input asp-for="OtHours" type="number" class="form-control" id="otHours" readonly name="OtHours" />
+                            <span asp-validation-for="OtHours" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OtHoursAmount" class="control-label">Monto total por Horas Extra:</label>
+                            <input asp-for="OtHoursAmount" type="number" step="any" class="form-control" id="otHoursAmount" readonly name="OtHoursAmount" />
+                            <span asp-validation-for="OtHoursAmount" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EnfermedadMaternidad" class="control-label">CCSS S.E.M.:</label>
+                            <input asp-for="EnfermedadMaternidad" type="number" step="any" class="form-control" readonly name="EnfermedadMaternidad" />
+                            <span asp-validation-for="EnfermedadMaternidad" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IVM" class="control-label">CCSS I.V.M.:</label>
+                            <input asp-for="IVM" type="number" step="any" class="form-control" readonly name="IVM" />
+                            <span asp-validation-for="IVM" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BancoPopular" class="control-label">Banco Popular:</label>
+                            <input asp-for="BancoPopular" type="number" step="any" class="form-control" readonly name="BancoPopular" />
+                            <span asp-validation-for="BancoPopular" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalDeductions" class="control-label">Monto Total Deducciones:</label>
+                            <input asp-for="TotalDeductions" type="number" step="any" class="form-control" readonly name="TotalDeductions" />
+                            <span asp-validation-for="TotalDeductions" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="GrossSalary" class="control-label">Salario Bruto:</label>
+                            <input asp-for="GrossSalary" type="number" step="any" class="form-control" readonly name="GrossSalary" />
+                            <span asp-validation-for="GrossSalary" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NetSalary" class="control-label">Salario Neto:</label>
+                            <input asp-for="NetSalary" type="number" step="any" class="form-control" readonly name="NetSalary" />
+                            <span asp-validation-for="NetSalary" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <input type="submit" value="Crear" class="btn btn-success ml-2" />
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                    <button type="button" id="search-btn" class="btn btn-primary ml-2">Buscar</button>
+                    <button type="button" id="btnCalculate" class="btn btn-warning ml-2">Calcular</button>
+                    <button type="button" id="limpiar-btn" class="btn btn-dark ml-2">Limpiar Formulario</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Información de Búsqueda</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Para buscar un usuario, puedes utilizar los siguientes criterios:</p>
+                <ul>
+                    <li>Nombre completo</li>
+                    <li>Identificación (cédula)</li>
+                </ul>
+                <p>Asegúrate de ingresar al menos 3 caracteres para obtener resultados precisos. Si buscas por número de cédula, debes incluir los guiones.</p>
+                <p>Para iniciar con la búsqueda se debe presionar el botón "Buscar", ubicado en la sección inferior del formulario.</p>
+                <p>En caso de recibir varios resultados, debe escoger el usuario en la lista desplegable presionando clic sobre el.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#baseSalary').val('0');
+        });
+    </script>
+    <script>
+        function limpiarFormulario() {
+            $('#name').prop('disabled', true).val('');
+            $('#department').val('');
+            $('#userId').val('');
+            $('#fullName').val('');
+            $('#baseSalary').val('0');
+            $('#periodName').val('');
+            $('#otHours').val('0');
+            $('#otHoursAmount').val('0');
+            $('#EnfermedadMaternidad').val('0');
+            $('#IVM').val('0');
+            $('#BancoPopular').val('0');
+            $('#TotalDeductions').val('0');
+            $('#payrollPeriodId').val('');
+            $('#payrollFrequency').val('');
+            $('#OrdinarySalary').val('0');
+            $('#GrossSalary').val('0');
+            $('#NetSalary').val('0');
+            $('#error-message').text('').hide();
+            $('#name-select').hide();
+            $('#name').show();
+        }
+
+        $(document).ready(function () {
+            $('#limpiar-btn').on('click', function () {
+                limpiarFormulario();
+            });
+        });
+    </script>
+    <script>
+        $('#btnCalculate').on('click', function () {
+            var baseSalary = parseFloat(document.getElementById('baseSalary').value);
+            if (!baseSalary) {
+                showErrorAlert('Salario base no válido, por favor, busque o valide los datos del empleado antes de realizar los cálculos.');
+                return;
+            }
+
+            var payrollPeriodId = document.getElementById('PayrollPeriodId').value;
+            if (payrollPeriodId === '') {
+                showErrorAlert('Por favor, seleccione un periodo de pago.');
+                return;
+            }
+
+            var payrollFrequency = document.getElementById('PayrollFrequency').value;
+            if (payrollFrequency === '') {
+                showErrorAlert('Por favor, seleccione una frecuencia de nómina.');
+                return;
+            }
+
+            var payrollFrequency = document.getElementById('PayrollFrequency').value;
+            var ordinarySalary = (payrollFrequency === 'Quincenal') ? baseSalary / 2 : baseSalary;
+
+            document.getElementById('OrdinarySalary').value = ordinarySalary.toFixed(2);
+
+            var EnfermedadMaternidad = ordinarySalary * 0.055;
+            var IVM = ordinarySalary * 0.0417;
+            var BancoPopular = ordinarySalary * 0.01;
+
+            document.getElementById('EnfermedadMaternidad').value = EnfermedadMaternidad.toFixed(2);
+            document.getElementById('IVM').value = IVM.toFixed(2);
+            document.getElementById('BancoPopular').value = BancoPopular.toFixed(2);
+
+            var totalDeductions = EnfermedadMaternidad + IVM + BancoPopular;
+
+            document.getElementById('TotalDeductions').value = totalDeductions.toFixed(2);
+
+            var OtHoursAmount = parseFloat(document.getElementById('otHoursAmount').value);
+            var GrossSalary = ordinarySalary + OtHoursAmount;
+            var NetSalary = GrossSalary - totalDeductions;
+
+            document.getElementById('GrossSalary').value = GrossSalary.toFixed(2);
+            document.getElementById('NetSalary').value = NetSalary.toFixed(2);
+
+            showSuccessAlert('Los cálculos se realizaron correctamente, favor validar.');
+        });
+    </script>
+    <script>
+
+
+        $(document).ready(function () {
+            var searchTerm = '';
+
+            $('#dni').on('input', function () {
+                searchTerm = $(this).val();
+                if (searchTerm.length === 0) {
+                    limpiarFormulario();
+                    return; // Detiene la ejecución para no hacer la petición AJAX
+                }
+            });
+
+            $('#search-btn').on('click', function () {
+                limpiarFormulario();
+                var searchTerm = $('#dni').val();
+                if (searchTerm.length === 0) {
+                    showErrorAlert('Por favor, ingrese el nombre o cédula del empleado.');
+                    limpiarFormulario();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Users/GetUserData?userDni=' + searchTerm,
+                    type: 'GET',
+                    success: function (data) {
+                        
+                        if (Array.isArray(data) && data.length > 1) {
+                            // Mostrar select si hay más de un resultado
+                            var optionsHtml = '<option value="" disabled selected>-Seleccione el usuario-</option>';
+                            optionsHtml += data.map(user => '<option value="' + user.Id + '" data-department="' + user.Department + '" data-fullname="' + user.FullName + '" data-basesalary="' + user.BaseSalary + '" data-periodname="' + user.PeriodName + '" data-vacationdays="' + user.VacationDays + '">' + user.FullName + '</option>').join('');
+
+                            $('#name').hide();
+                            $('#name-select').html(optionsHtml).prop('disabled', false).show();
+                            $('#department').val('');
+                            $('#error-message').text('').hide();
+                            showSuccessAlert('Usuarios encontrados con éxito. Por favor, seleccione el usuario deseado.');
+                        } else if (data.length === 1) {
+                            // Mostrar resultado en input deshabilitado si hay un solo resultado
+                            $('#name').prop('disabled', false).val(data[0].FullName).show();
+                            $('#department').val(data[0].Department);
+                            $('#error-message').text('').hide();
+                            $('#name-select').hide();
+                            $('#userId').val(data[0].Id); // Actualizar el valor del userId
+                            $('#fullName').val(data[0].FullName); // Actualizar el valor del fullName
+                            $('#baseSalary').val(data[0].BaseSalary); // Actualizar el valor del BaseSalary
+                            $('#periodName').val(data[0].PeriodName); // Actualizar el valor del periodName
+                            
+                            showSuccessAlert('Usuario encontrado con éxito.');
+                        } else {
+                            $('#name').prop('disabled', true).val('');
+                            $('#department').val('');
+                            $('#userId').val('');
+                            $('#fullName').val('');
+                            $('#baseSalary').val('');
+                            $('#periodName').val('');
+                            $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                            showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.');
+                            $('#name-select').hide();
+                        }
+                        // Realizar la segunda llamada AJAX para obtener las horas extra
+                        $.ajax({
+                            url: '/Payroll/GetTotalOvertimeForEmployee?userId=' + data[0].Id,
+                            type: 'GET',
+                            success: function (overtimeData) {
+                                $('#otHours').val(overtimeData.totalOtHours);
+                                $('#otHoursAmount').val(overtimeData.totalOtAmount);
+                            },
+                            error: function (error) {
+                                console.error(error);
+                            }
+                        });
+
+                    },
+                    error: function (error) {
+                        $('#name').prop('disabled', true).val('');
+                        $('#department').val('');
+                        $('#userId').val('');
+                        $('#fullName').val('');
+                        $('#baseSalary').val('0');
+                        $('#periodName').val('');
+                        $('#otHours').val('0');
+                        $('#otHoursAmount').val('0');
+                        $('#EnfermedadMaternidad').val('0');
+                        $('#IVM').val('0');
+                        $('#BancoPopular').val('0');
+                        $('#TotalDeductions').val('0');
+                        $('#payrollPeriodId').val('');
+                        $('#payrollFrequency').val('');
+                        $('#OrdinarySalary').val('0');
+                        $('#GrossSalary').val('0');
+                        $('#NetSalary').val('0');
+                        $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                        showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.');
+                        $('#name-select').hide();
+                        console.error(error);
+                    }
+                });
+            });
+
+            $('#name-select').on('change', function () {
+                var selectedOption = $(this).find(':selected');
+                var selectedDepartment = selectedOption.data('department');
+                var selectedFullName = selectedOption.data('fullname');
+                var selectedBaseSalary = selectedOption.data('basesalary');
+                var selectedPeriodName = selectedOption.data('periodname');
+
+                $('#department').val(selectedDepartment);
+                $('#userId').val($(this).val()); // Actualizar el valor del userId
+                $('#fullName').val(selectedFullName); // Actualizar el valor del fullName
+                $('#baseSalary').val(selectedBaseSalary); // Actualizar el valor del fullName
+                $('#periodName').val(selectedPeriodName); // Actualizar el valor del periodName
+
+                var selectedUserId = selectedOption.val();
+                // Realizar la llamada AJAX para obtener las horas extra del usuario seleccionado
+                $.ajax({
+                    url: '/Payroll/GetTotalOvertimeForEmployee?userId=' + selectedUserId,
+                    type: 'GET',
+                    success: function (overtimeData) {
+                        $('#otHours').val(overtimeData.totalOtHours);
+                        $('#otHoursAmount').val(overtimeData.totalOtAmount);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres crear la nómina?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

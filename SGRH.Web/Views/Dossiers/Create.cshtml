@@ -1,0 +1,224 @@
+﻿@model SGRH.Web.Models.DossierViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Crear Expediente</strong></h3>
+                </div>
+                <form method=post asp-action="Create" enctype="multipart/form-data" onsubmit="sendForm(event)" id="myForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="dni">Buscar Usuario:</label>
+                            <div class="d-flex align-items-center">
+                                <input type="text" id="dni" name="dni" class="form-control" min="3" maxlength="35" />
+                                <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#infoModal">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Nombre:</label>
+                            <input type="text" class="form-control" id="name" name="name" readonly />
+                            <select class="form-control" id="name-select" name="name" style="display:none;"></select>
+                        </div>
+
+                        <input type="hidden" id="userId" name="userId" />
+
+                        <div class="form-group">
+                            <label for="department">Departamento:</label>
+                            <input type="text" class="form-control" id="department" name="department" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DocumentType" class="control-label">Tipo de Documento:</label>
+                            <select asp-for="DocumentType" class="form-control">
+                                <option value="">Seleccione un tipo de documento</option>
+                                @foreach (var type in Enum.GetValues(typeof(SGRH.Web.Enums.DocumentType)))
+                                {
+                                    <option value="@type">@type.ToString()</option>
+                                }
+                            </select>
+                            <span asp-validation-for="DocumentType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Documentation" class="control-label">Documentos (opcional):</label>
+                            <div class="custom-file">
+                                <input asp-for="Documentation" type="file" class="custom-file-input" id="customFile" multiple onchange="updateFileNameLabel(this)">
+                                <label class="custom-file-label" for="customFile" id="customFileLabel">Seleccionar archivo(s)</label>
+                            </div>
+                            <span asp-validation-for="Documentation" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+
+                            <input type="submit" value="Crear" class="btn btn-success ml-2 my-2" />
+                            <button type="button" id="search-btn" class="btn btn-primary ml-2 my-2">Buscar</button>
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2 my-2">Volver</a>
+                            <button type="button" id="limpiar-btn" class="btn btn-dark ml-2 my-2">Limpiar Formulario</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Información de Búsqueda</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Para buscar un usuario, puedes utilizar los siguientes criterios:</p>
+                <ul>
+                    <li>Nombre completo</li>
+                    <li>Identificación (cédula)</li>
+                </ul>
+                <p>Asegúrate de ingresar al menos 3 caracteres para obtener resultados precisos. Si buscas por número de cédula, debes incluir los guiones.</p>
+                <p>Para iniciar con la búsqueda se debe presionar el botón "Buscar", ubicado en la sección inferior del formulario.</p>
+                <p>En caso de recibir varios resultados, debe escoger el usuario en la lista desplegable presionando clic sobre el.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        function limpiarFormulario(){
+            $('#name').prop('disabled', true).val('');
+            $('#dni').val('');
+            $('#department').val('');
+            $('#userId').val('');
+            $('#error-message').text('').hide();
+            $('#name-select').hide();
+            $('#name').show();
+        }
+
+        $(document).ready(function () {
+            $('#limpiar-btn').on('click', function () {
+                limpiarFormulario();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var searchTerm = '';
+
+            $('#dni').on('input', function () {
+                searchTerm = $(this).val();
+                if (searchTerm.length === 0) {
+                    limpiarFormulario();       
+                    return; // Detiene la ejecución para no hacer la petición AJAX
+                }
+            });
+
+            $('#search-btn').on('click', function () {
+                var searchTerm = $('#dni').val();
+                if (searchTerm.length === 0) {
+                    showErrorAlert('Por favor, ingrese el nombre o cédula del empleado.');
+                    limpiarFormulario();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Users/GetUserData?userDni=' + searchTerm,
+                    type: 'GET',
+                    success: function (data) {
+                        if (Array.isArray(data) && data.length > 1) {
+                            // Mostrar select si hay más de un resultado
+                            var optionsHtml = '<option value="" disabled selected>-Seleccione el usuario-</option>';
+                            optionsHtml += data.map(user => '<option value="' + user.Id + '" data-department="' + user.Department + '">' + user.FullName + '</option>').join('');
+                            $('#name').hide();
+                            $('#name-select').html(optionsHtml).prop('disabled', false).show();
+                            $('#department').val('');
+                            $('#error-message').text('').hide();
+                            showSuccessAlert('Usuarios encontrados con éxito. Por favor, seleccione el usuario deseado.');
+                        } else if (data.length === 1) {
+                            // Mostrar resultado en input deshabilitado si hay un solo resultado
+                            $('#name').prop('disabled', false).val(data[0].FullName).show();
+                            $('#department').val(data[0].Department);
+                            $('#userId').val(data[0].Id);
+                            $('#error-message').text('').hide();
+                            $('#name-select').hide();
+                            showSuccessAlert('Usuario encontrado con éxito.');
+                        } else {
+                            $('#name').prop('disabled', true).val('');
+                            $('#department').val('');
+                            $('#userId').val('');
+                            $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                            showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.');
+                            $('#name-select').hide();
+                        }
+                    },
+                    error: function (error) {
+                        $('#name').prop('disabled', true).val('');
+                        $('#department').val('');
+                        $('#userId').val('');
+                        $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                        showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.');
+                        $('#name-select').hide();
+                        console.error(error);
+                    }
+                });
+            });
+
+            $('#name-select').on('change', function () {
+                var selectedOption = $(this).find(':selected');
+                var selectedDepartment = selectedOption.data('department');
+                $('#department').val(selectedDepartment);
+                $('#userId').val($(this).val());
+            });
+
+        });
+
+
+    </script>
+
+    <script>
+        function updateFileNameLabel(input) {
+            var fileName = input.files.length > 1 ? input.files.length + ' archivos seleccionados' : input.files[0].name;
+            document.getElementById('customFileLabel').innerText = fileName;
+        }
+    </script>
+
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres registrar el expediente?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

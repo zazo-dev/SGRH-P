@@ -1,0 +1,87 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Vacation>
+
+@{
+    ViewData["Title"] = "Listado de mis Vacaciones";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de mis solicitudes de vacaciones</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="RequestVacation" asp-controller="Vacations">
+                <i class="fas fa-plus"></i> Solicitar Vacaciones
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.ActionType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Start_Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.End_Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RequestedDays)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.Status)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (item.PersonalAction != null)
+                            {
+                                @Html.DisplayFor(modelItem => item.PersonalAction.ActionType)
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </td>
+                        <td>
+                            @item.Start_Date.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.End_Date.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.RequestedDays
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PersonalAction.Description)
+                        </td>
+                        <td>
+                            @{
+                                var badgeClass = item.PersonalAction.Status == SGRH.Web.Enums.Status.Aprobado ? "badge-success"
+                                : item.PersonalAction.Status == SGRH.Web.Enums.Status.Pendiente ? "badge-warning"
+                                : "badge-danger";
+                            }
+                            <span class="badge @badgeClass">
+                                @item.PersonalAction.Status.ToString()
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>

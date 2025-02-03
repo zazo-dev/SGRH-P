@@ -1,0 +1,78 @@
+﻿@model SGRH.Web.Models.ViewModels.DetailsLayoffViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Despidos";
+    ViewBag.NombreUbicacion = "Editar Despido";
+    ViewData["Title"] = "Editar Despido";
+}
+
+<hr />
+<div class="container">
+    <form>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Detalles del Despido</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label asp-for="PersonalAction.User.FullName" class="control-label">Nombre del Empleado:</label>
+                            <input asp-for="PersonalAction.User.FullName" class="form-control" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DismissalDate" class="control-label">Fecha de Despido:</label>
+                            <input asp-for="DismissalDate" type="date" class="form-control" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DismissalCause" class="control-label">Causa del Despido:</label>
+                            <input asp-for="DismissalCause" class="form-control" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="RegisteredBy" class="control-label">Hecho por:</label>
+                            <input asp-for="RegisteredBy" class="form-control" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="HasEmployerResponsibility" class="control-label">Responsabilidad Patronal:</label>
+                            @if (Model.HasEmployerResponsibility)
+                            {
+                                <input value="El despido se hace con Resposabilidad Patronal" class="form-control" readonly />
+                            }
+                            else
+                            {
+                                <input value="El despido no se hace con Resposabilidad Patronal" class="form-control" readonly />
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="HasProcessed" class="control-label">Liquidacion:</label>
+                            @if (Model.HasProcessed)
+                            {
+                                <input value="La liquidación fue procesada" class="form-control" readonly />
+                            }
+                            else
+                            {
+                                <br/>
+                                <a class="btn btn-warning m-2" asp-action="CreateSettlement" asp-controller="Settlements" asp-route-layoffId="@Model.LayoffId">
+                                    Procesar Liquidación
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

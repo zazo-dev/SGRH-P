@@ -1,0 +1,132 @@
+﻿@model AbsenceDetailsViewModel
+
+@{
+    ViewData["Title"] = "Detalles de Ausencia";
+}
+
+<hr />
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Detalles de Ausencia</strong></h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row justify-content-center">
+                        <label class="col-sm-11 col-form-label">Categoría:</label>
+                        <div class="col-sm-11">
+                            <input type="text" class="form-control" readonly value="@Model.Category" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row justify-content-center">
+                        <label class="col-sm-11 col-form-label">Fecha de Inicio:</label>
+                        <div class="col-sm-11">
+                            <input type="text" class="form-control" readonly value="@Model.StartDate.ToShortDateString()" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row justify-content-center">
+                        <label class="col-sm-11 col-form-label">Fecha de Finalización:</label>
+                        <div class="col-sm-11">
+                            <input type="text" class="form-control" readonly value="@Model.EndDate.ToShortDateString()" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row justify-content-center">
+                        <label class="col-sm-11 col-form-label">Comentarios:</label>
+                        <div class="col-sm-11">
+                            <textarea class="form-control" rows="3" readonly>@Model.Comments</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row justify-content-center text-center">
+                        <div class="col-sm-11">
+                            <div class="card card-info card-lg">
+                                <div class="card-header">
+                                    <h3 class="card-title">Documentos Adjuntos: </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <table class="table" id="documentTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre de archivo</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Document != null && Model.Document.Any())
+                                            {
+                                                foreach (var document in Model.Document)
+                                                {
+                                                    <tr>
+                                                        <td>@document.FileName</td>
+                                                        <td class="text-right py-0 align-middle">
+                                                            <div class="btn-group btn-group-sm">
+                                                                <a href="@Url.Action("DownloadDocument", "Attendance", new { documentId = document.Id })" class="btn btn-info"><i class="fas fa-save"></i></a>
+                                                                <button class="btn btn-danger delete-document" data-document-id="@document.Id"><i class="fas fa-trash"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="3">No hay documentos adjuntos.</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.delete-document', function (e) {
+                e.preventDefault(); // Evitar que el formulario se envíe
+
+                var documentId = $(this).data('document-id');
+                var url = '@Url.Action("DeleteDocument", "Dossiers")';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { documentId: documentId },
+                    success: function (data) {
+                        if (data.success) {
+                            $('#documentTable').load(location.href + ' #documentTable');
+                            showSuccessAlert(data.message);
+                        } else {
+                            showErrorAlert(data.message);
+                        }
+                    },
+                    error: function () {
+                        showErrorAlert('Error inesperado al eliminar el documento.');
+                    }
+                });
+            });
+        });
+
+    </script>
+}

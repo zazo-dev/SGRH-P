@@ -1,0 +1,224 @@
+﻿@model SGRH.Web.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Crear Usuario";
+}
+<hr />
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Crear Usuario</strong></h3>
+                </div>
+                <form asp-action="Create" method="post" onsubmit="sendForm(event)" id="myForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label">Nombre:</label>
+                            <input asp-for="Name" class="form-control" placeholder="Ingrese el nombre" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="LastName" class="control-label">Apellidos:</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Ingrese los apellidos" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Dni" class="control-label">Número de cédula:</label>
+                            <input asp-for="Dni" class="form-control" placeholder="Ingrese el número de cédula sin guiones" />
+                            <span asp-validation-for="Dni" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BirthDate" class="control-label">Fecha de nacimiento:</label>
+                            <input asp-for="BirthDate" id="BirthDate"class="form-control" placeholder="mm/dd/yyyy" />
+                            <span asp-validation-for="BirthDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PhoneNumber" class="control-label">Número telefónico:</label>
+                            <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="Ingrese el número telefónico" pattern="\d{4}-\d{4}" title="Formato inválido. Debe ser 'xxxxxxxx'" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label">Correo electrónico:</label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="Ingrese la dirección de correo electrónico" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DepartmentId" class="control-label">Departamento:</label>
+                            <select asp-for="DepartmentId" asp-items="@Model.Departments" class="form-control">
+                                <option value="">Seleccione un departamento</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PositionId" class="control-label">Puesto:</label>
+                            <select asp-for="PositionId" asp-items="@Model.Positions" class="form-control">
+                                <option value="">Seleccione un puesto</option>
+                            </select>
+                            <span asp-validation-for="PositionId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="UserType" class="control-label">Rol:</label>
+                            <select asp-for="UserType" asp-items="@Model.Roles" class="form-control">
+                                <option value="">Seleccione un rol</option>
+                            </select>
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="HiredDate" class="control-label">Fecha de Contratación:</label>
+                            <input asp-for="HiredDate" id="HiredDate" class="form-control" placeholder="mm/dd/yyyy" />
+                            <span asp-validation-for="HiredDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BaseSalary" class="control-label">Salario Base:</label>
+                            <input asp-for="BaseSalary" type="number" id="baseSalaryInput" class="form-control" placeholder="Ingrese el salario base del empleado" />
+                            <span asp-validation-for="BaseSalary" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="WorkPeriodId" class="control-label">Jornada Laboral:</label>
+                            <select asp-for="WorkPeriodId" asp-items="@Model.WorkPeriods" class="form-control">
+                                <option value="">Seleccione una jornada</option>
+                            </select>
+                            <span asp-validation-for="WorkPeriodId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-success" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.getElementById('baseSalaryInput').value = '@(Model.BaseSalary.HasValue ? Model.BaseSalary.Value.ToString("0.##") : "")';
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Al cargar la página, deshabilitar el dropdown de puestos
+            $('#PositionId').prop('disabled', true);
+
+            // Manejar el cambio en el dropdown de departamentos
+            $('#DepartmentId').change(function () {
+                var departmentId = $(this).val();
+
+                // Deshabilitar el dropdown de puestos mientras se carga la información
+                $('#PositionId').prop('disabled', true);
+
+                // Realizar la llamada Ajax para obtener los puestos del departamento seleccionado
+                $.ajax({
+                    url: '/Users/GetPositionsByDepartment',
+                    type: 'GET',
+                    data: { departmentId: departmentId },
+                    success: function (data) {
+                        // Limpiar y habilitar el dropdown de puestos
+                        $('#PositionId').empty().append('<option value="">Seleccione un puesto</option>');
+                        $.each(data, function (i, item) {
+                            $('#PositionId').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        $('#PositionId').prop('disabled', false);
+                    },
+                    error: function () {
+                        // Manejar errores si es necesario
+                        alert('Error al obtener los puestos.');
+                        $('#PositionId').prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Validar nombre y apellidos para que no contengan números
+            $('#Name, #LastName').on('input', function () {
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            });
+
+           
+            // Validar fecha de nacimiento para que no sea reciente ni futura
+            $('#BirthDate').on('blur', function () {
+                let birthDate = new Date(this.value);
+                let minDate = new Date('01-01-1900');
+                let maxDate = new Date();
+                maxDate.setFullYear(maxDate.getFullYear() - 18); // Solo permitir mayores de 18 años
+
+                if (birthDate < minDate || birthDate > maxDate) {
+                    showErrorAlert('La fecha de nacimiento debe estar entre 01/01/1900 y hace 18 años.');
+                    this.value = '';
+                }
+            });
+
+            // Validar fecha de contratación para que no sea futura
+            $('#HiredDate').on('blur', function () {
+                let hiredDate = new Date(this.value);
+                let minDate = new Date('01-01-1900');
+                let maxDate = new Date();
+        
+                // Comparar solo las fechas sin las horas
+                hiredDate.setHours(0, 0, 0, 0);
+                minDate.setHours(0, 0, 0, 0);
+                maxDate.setHours(0, 0, 0, 0);
+
+                if (hiredDate < minDate || hiredDate >= maxDate) {
+                    showErrorAlert('La fecha de contratación no puede ser una fecha futura.');
+                    this.value = '';
+                }
+            });
+
+            // Validar salario para que no sea negativo
+            $('#baseSalaryInput').on('input', function () {
+                if (parseFloat(this.value) < 0) {
+                    showErrorAlert('El salario base no puede ser negativo.');
+                    this.value = '';
+                }
+            });
+
+            // Formatear DNI y teléfono al ingresar
+            formatDni($('#Dni'));
+            $('#Dni').on('input', function () {
+                formatDni($(this));
+            });
+
+            formatPhoneNumber($('#PhoneNumber'));
+            $('#PhoneNumber').on('input', function () {
+                formatPhoneNumber($(this));
+            });
+
+            function formatDni(input) {
+                var value = input.val().replace(/\D/g, '');
+                var formattedValue = value.replace(/^(\d{1,1})(\d{4,4})(\d{4,4})$/, '$1-$2-$3');
+                input.val(formattedValue);
+            }
+
+            function formatPhoneNumber(input) {
+                var value = input.val().replace(/\D/g, '');
+                var formattedValue = value.replace(/^(\d{4,4})(\d{4,4})$/, '$1-$2');
+                input.val(formattedValue);
+            }
+        });
+
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres crear un usuario?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}
+

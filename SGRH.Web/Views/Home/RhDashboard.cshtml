@@ -1,0 +1,416 @@
+﻿@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "Dashboard Supervisor";
+    ViewBag.Titulo = "Dashboard Supervisor RH";
+    ViewBag.NombreUbicacion = "Dashboard Supervisor RH";
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user?.Id;
+}
+
+<hr />
+<div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="userBox">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="usersCount">Loading...</h3>
+                <p>Total de empleados</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-people"></i>
+            </div>
+            <a asp-controller="Users" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="warningsBox">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3 id="warningsCount">Loading...</h3>
+                <p>Total de Amonestaciones</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-android-warning"></i>
+            </div>
+            <a asp-controller="Warning" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="vacationsBox">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="vacationsCount">Loading...</h3>
+                <p>Vacaciones pendientes de aprobar</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-map"></i>
+            </div>
+            <a asp-controller="Vacations" asp-action="VacationsManagement" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="OtBox">
+        <!-- small box -->
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3 id="OtCount">Loading...</h3>
+                <p>Horas Extra pendientes de aprobar</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-time"></i>
+            </div>
+            <a asp-controller="Overtime" asp-action="OvertimeManagement" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="departmentsBox">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3 id="depCount">Loading...</h3>
+                <p>Total de departamentos</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-list"></i>
+            </div>
+            <a asp-controller="Department" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="positionsBox">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3 id="positionCount">Loading...</h3>
+                <p>Total de puestos</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-list"></i>
+            </div>
+            <a asp-controller="Position" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-12 col-12" id="layoffsBox">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3 id="layoffCount">Loading...</h3>
+                <p>Total de despidos</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-minus"></i>
+            </div>
+            <a asp-controller="Layoffs" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3 id="settlementCount">Loading...</h3>
+                <p>Total de liquidaciones procesadas</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-pie"></i>
+            </div>
+            <a asp-controller="Settlements" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3 id="settlementAmount">Loading...</h3>
+                <p>Monto de liquidaciones procesadas</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i>
+            </div>
+            <a asp-controller="Settlements" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-9 col-md-6 col-sm-12 col-12">
+        <div class="card" style="height: 468px;">
+            <div class="card-header">
+                <h3 class="card-title">Monto acumulado de liquidaciones</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="settlementChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-12 col-12" id="payrollAmountBox">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="payrollCount">Loading...</h3>
+                <p>Pagos realizados</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-calculator"></i>
+            </div>
+            <a asp-controller="Payroll" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="payrollAmount">Loading...</h3>
+                <p>Monto total de nóminas pagadas</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i>
+            </div>
+            <a asp-controller="Payroll" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-9 col-md-6 col-sm-12 col-12">
+        <div class="card" style="height: 305px;">
+            <div class="card-header">
+                <h3 class="card-title">Desglose mensual de pagos</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="payrollChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main row -->
+<div class="row">
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var userId = '@userId'; // Obtener el ID de usuario
+            $.ajax({
+                url: '/Users/GetEmployeesCount',
+                type: 'GET',
+                success: function (data) {
+                    $('#usersCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Vacations/GetPendingVacationsCountForSupervisor',
+                type: 'GET',
+                success: function (data) {
+                    $('#vacationsCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Overtime/GetPendingOTCountForSupervisor',
+                type: 'GET',
+                success: function (data) {
+                    $('#OtCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Warning/GetWarningsCount',
+                type: 'GET',
+                success: function (data) {
+                    $('#warningsCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Department/CountDepartments',
+                type: 'GET',
+                success: function (data) {
+                    $('#depCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Position/CountPositions',
+                type: 'GET',
+                success: function (data) {
+                    $('#positionCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Layoffs/CountLayoffs',
+                type: 'GET',
+                success: function (data) {
+                    $('#layoffCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Settlements/CountSettlements',
+                type: 'GET',
+                success: function (data) {
+                    $('#settlementCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Settlements/TotalAmountSettlements',
+                type: 'GET',
+                success: function (data) {
+                    var formattedAmount = data.toLocaleString('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 });
+                    $('#settlementAmount').text(formattedAmount);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Settlements/GetMonthlySettlementAmount',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                    var ctx = document.getElementById('settlementChart').getContext('2d');
+                    var chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Monto acumulado de liquidaciones',
+                            data: [],
+                            backgroundColor: 'rgba(220, 53, 69, 0.2)', 
+                            borderColor: 'rgba(220, 53, 69, 1)',
+
+                            borderWidth: 1
+                        }]
+                    };
+
+                    data.forEach(function (item) {
+                        chartData.labels.push(item.month);
+                        chartData.datasets[0].data.push(item.amount);
+                    });
+
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            aspectRatio: 2,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value, index, values) {
+                                            return '₡' + value.toFixed(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+
+            $.ajax({
+                url: '/Payroll/GetPayrollAmount',
+                type: 'GET',
+                success: function (data) {
+                    var formattedAmount = data.toLocaleString('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 });
+                    $('#payrollAmount').text(formattedAmount);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Payroll/GetMonthlyPayrollAmount',
+                type: 'GET',
+                success: function (data) {
+                    var ctx = document.getElementById('payrollChart').getContext('2d');
+                    var chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Monto acumulado de nóminas pagadas',
+                            data: [],
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    data.forEach(function (item) {
+                        chartData.labels.push(item.month);
+                        chartData.datasets[0].data.push(item.amount);
+                    });
+
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            aspectRatio: 2,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value, index, values) {
+                                            return '₡' + value.toFixed(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Payroll/GetPayrollCount',
+                type: 'GET',
+                success: function (data) {
+                    $('#payrollCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+
+        });
+    </script>
+
+}

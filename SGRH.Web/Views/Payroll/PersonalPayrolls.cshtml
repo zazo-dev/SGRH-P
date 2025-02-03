@@ -1,0 +1,97 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Payroll>;
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Listado Nóminas";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Nóminas Personales</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.User.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PayrollPeriod.PeriodName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PayrollPeriod.StartDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PayrollPeriod.EndDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PayrollFrequency)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TotalDeductions)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GrossSalary)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NetSalary)
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.User.FullName
+                        </td>
+                        <td>
+                            @item.PayrollPeriod.PeriodName
+                        </td>
+                        <td>
+                            @item.PayrollPeriod.StartDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.PayrollPeriod.EndDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.PayrollFrequency
+                        </td>
+                        <td>
+                            ₡@item.TotalDeductions.ToString("0.00", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            ₡@item.GrossSalary.ToString("0.00", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            ₡@item.NetSalary.ToString("0.00", CultureInfo.InvariantCulture)
+                        </td>
+                      
+                        <td>
+                            <a asp-action="PayrollDetails" asp-route-id="@item.Id_Payroll" class="btn btn-secondary"><i class="fa fa-eye"></i> Detalles</a>
+                        </td>
+                        <td>
+                            <!-- Botón para descargar el PDF -->
+                            <a asp-action="GeneratePayrollPdf" asp-route-id="@item.Id_Payroll" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Descargar PDF
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>

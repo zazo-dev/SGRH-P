@@ -1,0 +1,66 @@
+﻿@model SGRH.Web.Models.WarningViewModel
+
+@{
+    ViewData["Title"] = "Eliminar Amonestación";
+}
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Eliminar Amonestación</strong></h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Razón:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="@Model.Reason" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Observaciones:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="@Model.Observations" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="form-group">
+                        <form asp-action="Delete" method="post" onsubmit="sendForm(event)" id="myForm">
+                            <input type="hidden" asp-for="Id_Warnings" />
+                            <div class="form-group">
+                                <input type="submit" value="Eliminar" class="btn btn-danger ml-2 my-2" />
+                                <a asp-action="Index" class="btn btn-secondary ml-2 my-2">Volver</a>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar la amonestación?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

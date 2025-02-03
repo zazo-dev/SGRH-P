@@ -1,0 +1,154 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<SGRH.Web.Models.Entities.User> UserManager
+@model IEnumerable<SGRH.Web.Models.Entities.Absence>
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = await UserManager.GetRolesAsync(user);
+}
+@{
+    ViewData["Title"] = "Listado de Ausencias";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Ausencias</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="RegisterAbsence">
+                <i class="fas fa-plus"></i> Registrar Ausencia
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Usuario
+                    </th>
+                    <th>
+                        Categoría
+                    </th>
+                    <th>
+                        Fecha de Inicio
+                    </th>
+                    <th>
+                        Fecha de Finalización
+                    </th>
+                    <th>
+                        Comentarios
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    @if (roles.Contains("SupervisorRH") || roles.Contains("SupervisorDpto") || roles.Contains("Administrador"))
+                    {
+                    <th>
+                        Acción
+                    </th>
+                    }
+                    <th>
+                        Acción
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var absence in Model)
+                {
+                    <tr>
+                        <td>
+                            @absence.User.FullName
+                        </td>
+                        <td>
+                            @absence.AbsenceCategory.Category_Name
+                        </td>
+                        <td>
+                            @absence.Start_Date?.ToShortDateString()
+                        </td>
+                        <td>
+                            @absence.End_Date?.ToShortDateString()
+                        </td>
+                        <td>
+                            @absence.Absence_Comments
+                        </td>
+                        <td>
+                            <a asp-action="AbsenceDetails" asp-route-id="@absence.AbsenceId" class="btn btn-secondary"><i class="fa fa-eye"></i> Ver Detalles</a>
+                            
+                        </td>
+                        @if (roles.Contains("SupervisorRH") || roles.Contains("SupervisorDpto") || roles.Contains("Administrador"))
+                        {
+                            <td>
+                                <form id="deleteForm-@absence.AbsenceId" asp-controller="Attendance" asp-action="DeleteAbsencePost" asp-route-id="@absence.AbsenceId" method="post" onsubmit="confirmDelete(event,'@absence.AbsenceId')">
+                                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar</button>
+                                </form>
+                            </td>
+
+                        }
+                        @if (user == absence.User)
+                        {
+                            <td>
+                                <a asp-action="EditAbsence" asp-route-id="@absence.AbsenceId" class="btn btn-info"><i class="fa fa-edit"></i> Editar</a>
+
+
+                            </td>
+                        }else{
+                            <td>
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#noEditModal-@absence.AbsenceId"><i class="fa fa-exclamation-triangle"></i></button>
+                            </td>
+                        }
+
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>
+
+@foreach (var absence in Model)
+{
+    <div class="modal fade" id="noEditModal-@absence.AbsenceId" tabindex="-1" role="dialog" aria-labelledby="noEditModalLabel-@absence.AbsenceId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="noEditModalLabel-@absence.AbsenceId">No es posible editar</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    No tienes permiso para editar este registro porque fue creado por otro usuario.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function confirmDelete(e, absenceId) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar esta ausencia?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const formId = 'deleteForm-' + absenceId;
+                    const deleteForm = document.getElementById(formId);
+                    deleteForm.submit();
+                }
+            });
+        }
+    </script>
+}

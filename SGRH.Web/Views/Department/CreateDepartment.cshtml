@@ -1,0 +1,39 @@
+﻿@model Department
+
+@{
+    ViewBag.Titulo = "Gestión de Departamentos";
+    ViewBag.NombreUbicacion = "Registrar Departamento";
+    ViewData["Title"] = "Registrar Departamento";
+}
+
+<hr />
+<div class="container">
+    <form asp-action="CreateDepartment" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Registrar Departamento</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label asp-for="Department_Name" class="control-label">Nombre del Departamento:</label>
+                            <input asp-for="Department_Name" class="form-control" />
+                            <span asp-validation-for="Department_Name" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <input type="submit" value="Crear" class="btn btn-success ml-2" />
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+

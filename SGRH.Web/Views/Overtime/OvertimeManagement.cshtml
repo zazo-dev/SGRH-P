@@ -1,0 +1,58 @@
+﻿@model List<SGRH.Web.Models.Entities.Overtime>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Lista de solicitud de horas extra pendientes";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>@ViewData["Title"]</strong></h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped" id="example1">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Fecha</th>
+                    <th>Jornada</th>
+                    <th>Tipo</th>
+                    <th>Horas Solicitadas</th>
+                    <th>Monto</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr>
+                        <td>@request.PersonalAction.User.FullName</td>
+                        <td>@request.OT_Date.ToString("dd/MM/yyyy")</td>
+                        <td>@request.WorkPeriodName</td>
+                        <td>@request.TypeOT</td>
+                        <td>@request.Hours_Worked</td>
+                        <td>₡@request.AmountOT.ToString("0.00", CultureInfo.InvariantCulture)</td>
+                        <td>
+                            <div class="btn-group my-1">
+                                <form asp-controller="Overtime" asp-action="Approve" method="post">
+                                    <input type="hidden" name="overtimeId" value="@request.Id_OT" />
+                                    <button type="submit" class="btn btn-success">Aprobar</button>
+                                </form>
+                            </div>
+                            <div class="btn-group my-1">
+                                <form asp-controller="Overtime" asp-action="Reject" method="post">
+                                    <input type="hidden" name="overtimeId" value="@request.Id_OT" />
+                                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>

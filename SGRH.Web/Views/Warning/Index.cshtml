@@ -1,0 +1,80 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Warning>
+
+@{
+    ViewData["Title"] = "Listado de Amonestaciones";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Amonestaciones</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="Create">
+                <i class="fas fa-plus"></i> Crear Amonestación
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Empleado amonestado
+                    </th>
+                    <th>
+                        Razón
+                    </th>
+                    <th>
+                        Observaciones
+                    </th>
+                    <th>Acción</th>
+                    @if (!User.IsInRole("Empleado"))
+                    {
+                        <th>Acción</th>
+                        <th>Acción</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Reason)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Observations)
+                        </td>
+                        @if (!User.IsInRole("Empleado"))
+                        {
+                            <td>
+                                <div class="btn-group my-1">
+                                    <a asp-action="Edit" asp-route-id="@item.Id_Warnings" class="btn btn-info">Editar</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group my-1">
+                                    <a asp-action="Delete" asp-route-id="@item.Id_Warnings" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </td>
+                        }
+                        <td>
+                            <div class="btn-group my-1">
+                                <a asp-action="Details" asp-route-id="@item.Id_Warnings" class="btn btn-secondary">Detalles</a>
+                            </div>
+
+                        </td>
+                    </tr> 
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>

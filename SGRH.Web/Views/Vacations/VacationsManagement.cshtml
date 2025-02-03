@@ -1,0 +1,65 @@
+﻿@model List<SGRH.Web.Models.Entities.Vacation>
+
+@{
+    ViewData["Title"] = "Lista de solicitud de vacaciones";  
+} 
+
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>@ViewData["Title"]</strong></h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped" id="example1">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Días Solicitados</th>
+                    <th>Días Restantes Disponibles</th>
+                    <th>Sale del</th>
+                    <th>Hasta el</th>
+                    <th>Comentarios</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr>
+                        <td>@request.PersonalAction.User.UserName</td>
+                        <td>@request.RequestedDays</td>
+                        <td>@request.PersonalAction.User.VacationDays</td>
+                        <td>@request.Start_Date.ToString("dd/MM/yyyy")</td>
+                        <td>@request.End_Date.ToString("dd/MM/yyyy")</td>
+                        <td>@request.PersonalAction.Description</td>
+                        <td>
+                            <div class="btn-group my-1">
+                                <form asp-controller="Vacations" asp-action="Approve" method="post">
+                                    <input type="hidden" name="vacationId" value="@request.Id_Vacation" />
+                                    <button type="submit" class="btn btn-success">Aprobar</button>
+                                </form>
+                            </div>
+                            <div class="btn-group my-1">
+                                <form asp-controller="Vacations" asp-action="Reject" method="post">
+                                    <input type="hidden" name="vacationId" value="@request.Id_Vacation" />
+                                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

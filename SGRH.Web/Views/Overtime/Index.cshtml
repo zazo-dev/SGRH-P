@@ -1,0 +1,87 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Overtime>;
+@using System.Globalization
+
+
+@{
+    ViewData["Title"] = "Listado de Horas Extra";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Horas Extra</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="RequestOvertime" asp-controller="Overtime">
+                <i class="fas fa-plus"></i> Solicitar Horas Extra
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Empleado
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OT_Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WorkPeriodName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TypeOT)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Hours_Worked)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AmountOT)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.Status)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.PersonalAction.User.FullName
+                        </td>
+                        <td>
+                            @item.OT_Date.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.WorkPeriodName
+                        </td>
+                        <td>
+                            @item.TypeOT
+                        </td>
+                        <td>
+                            @item.Hours_Worked
+                        </td>
+                        <td>₡@item.AmountOT.ToString("0.00", CultureInfo.InvariantCulture)</td>
+                        <td>
+                            @{
+                                var badgeClass = item.PersonalAction.Status == SGRH.Web.Enums.Status.Aprobado ? "badge-success"
+                                : item.PersonalAction.Status == SGRH.Web.Enums.Status.Pendiente ? "badge-warning"
+                                : "badge-danger";
+                            }
+                            <span class="badge @badgeClass">
+                                @item.PersonalAction.Status.ToString()
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+ 

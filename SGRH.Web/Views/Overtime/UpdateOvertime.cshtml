@@ -1,0 +1,60 @@
+﻿@model SGRH.Web.Models.ViewModels.OvertimeViewModel
+
+@{
+    ViewData["Title"] = "Actualización de Horas Extra";
+    ViewBag.Titulo = "Gestión de Horas Extra";
+    ViewBag.NombreUbicacion = "Actualización de Horas Extra";
+}
+<hr />
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Formulario para Actualización de Horas Extra</strong></h3>
+                </div>
+                <form method="post" asp-action="UpdateOvertime" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="card-body">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="form-group">
+                            <label asp-for="OT_Date" class="control-label">Fecha:</label>
+                            <input asp-for="OT_Date" class="form-control" min="@DateTime.Now.Year-01-01" />
+                            <span asp-validation-for="OT_Date" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Hours_Worked" class="control-label">Cantidad de Horas:</label>
+                            <input asp-for="Hours_Worked" class="form-control" min=0 max="@ViewBag.MaxDailyOTHours" />
+                            <span asp-validation-for="Hours_Worked" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label">Descripción de solicitud:</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TypeOT" class="control-label">Tipo de Documento:</label>
+                            <select asp-for="TypeOT" class="form-control">
+                                <option value="">Seleccione el tipo de hora extra</option>
+                                @foreach (var type in Enum.GetValues(typeof(SGRH.Web.Enums.TypeOT)))
+                                {
+                                    <option value="@type">@type.ToString()</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TypeOT" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <input type="submit" value="Editar" class="btn btn-info" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+

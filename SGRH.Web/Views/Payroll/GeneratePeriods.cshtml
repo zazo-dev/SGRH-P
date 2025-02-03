@@ -1,0 +1,47 @@
+﻿@model SGRH.Web.Models.ViewModels.GeneratePeriodsViewModel
+
+@{
+    ViewData["Title"] = "Generar Periodos de Nómina";
+}
+
+<hr/>
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Generar Periodos de Nómina</strong></h3>
+                </div>
+                <form method="post" asp-action="GeneratePeriods">
+                    <div class="card-body">
+                    
+                            <div class="form-group">
+                                <label>Año:</label>
+                                <input type="number" class="form-control" name="year" required />
+                            </div>
+                        
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                    
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Generar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var yearInput = document.querySelector('input[name="year"]');
+            yearInput.addEventListener('input', function (event) {
+                if (!/^\d{0,4}$/.test(event.target.value)) {
+                    event.target.value = event.target.value.slice(0, 4);
+                }
+            });
+        });
+    </script>
+
+}

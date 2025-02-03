@@ -1,0 +1,215 @@
+﻿@model SGRH.Web.Models.AddInitialVacationDaysViewModel
+
+@{
+    ViewData["Title"] = "Añadir Días de Vacaciones";
+}
+<hr />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Añadir Días de Vacaciones</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="AddInitialVacationsDays" asp-controller="Vacations" onsubmit="sendForm(event)" id="myForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group">
+                            <label for="dni">Buscar Usuario:</label>
+                            <div class="d-flex align-items-center">
+                                <input type="text" id="dni" name="dni" class="form-control" min="3" maxlength="35" />
+                                <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#infoModal">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="name">Empleado:</label>
+                            <input type="text" class="form-control" id="name" name="name" readonly />
+                            <select class="form-control" id="name-select" name="name" style="display:none;"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name">Saldo Actual de Vacaciones</label>
+                            <input type="text" class="form-control" id="vacationBalance" name="vacationBalance" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="days">Días de Vacaciones a Agregar:</label>
+                            <input type="number" id="days" name="days" min="0" max="14" class="form-control" />
+                        </div>
+
+                        <input type="hidden" id="userId" name="userId" />
+
+                        <button type="submit" class="btn btn-success m-2">Agregar Días de Vacaciones</button>
+                        <button type="button" id="search-btn" class="btn btn-primary m-2">Buscar</button>
+                        <button type="button" id="limpiar-btn" class="btn btn-dark m-2">Limpiar Formulario</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Información de Búsqueda</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Para buscar un usuario, puedes utilizar los siguientes criterios:</p>
+                <ul>
+                    <li>Nombre completo</li>
+                    <li>Identificación (cédula)</li>
+                </ul>
+                <p>Asegúrate de ingresar al menos 3 caracteres para obtener resultados precisos. Si buscas por número de cédula, debes incluir los guiones.</p>
+                <p>Para iniciar con la búsqueda se debe presionar el botón "Buscar", ubicado en la sección inferior del formulario.</p>
+                <p>En caso de recibir varios resultados, debe escoger el usuario en la lista desplegable presionando clic sobre el.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#days').val('0');
+            $('#vacationBalance').val('0')
+            
+            //Validacion para que days no permita digitar numeros negativos y no permita digitar mas de 14 dias
+            $('#days').on('input', function () {
+                if ($(this).val() < 0) {
+                    $(this).val(0);
+                } else if ($(this).val() > 14) {
+                    $(this).val(14);
+                }
+            });
+
+        });
+    </script>
+    <script>
+        function limpiarFormulario() {
+            $('#name').prop('disabled', true).val('');
+            $('#dni').val('');
+            $('#department').val('');
+            $('#userId').val('');
+            $('#vacationBalance').val('0')
+            $('#days').val('0')
+            $('#error-message').text('').hide();
+            $('#name-select').hide();
+            $('#name').show();
+        }
+
+        $(document).ready(function () {
+            $('#limpiar-btn').on('click', function () {
+                limpiarFormulario();
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var searchTerm = '';
+
+            $('#dni').on('input', function () {
+                searchTerm = $(this).val();
+                if (searchTerm.length === 0) {
+                    limpiarFormulario();
+                    return; // Detiene la ejecución para no hacer la petición AJAX
+                }
+            });
+
+            $('#search-btn').on('click', function () {
+                var searchTerm = $('#dni').val();
+                if (searchTerm.length === 0) {
+                    showErrorAlert('Por favor, ingrese el nombre o cédula del empleado.');
+                    limpiarFormulario();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Users/GetUserData?userDni=' + searchTerm,
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data);
+                        if (Array.isArray(data) && data.length > 1) {
+                            // Mostrar select si hay más de un resultado
+                            var optionsHtml = '<option value="" disabled selected>-Seleccione el usuario-</option>';
+                            optionsHtml += data.map(user => '<option value="' + user.Id + '" data-department="' + '" data-vacationdays="' + user.VacationDays + '">' + user.FullName + '</option>').join('');
+                            $('#name').hide();
+                            $('#name-select').html(optionsHtml).prop('disabled', false).show();
+                            $('#department').val('');
+                            $('#error-message').text('').hide();
+                            showSuccessAlert('Usuarios encontrados con éxito. Por favor, seleccione el usuario deseado.');
+                        } else if (data.length === 1) {
+                            // Mostrar resultado en input deshabilitado si hay un solo resultado
+                            $('#name').prop('disabled', false).val(data[0].FullName).show();
+                            $('#department').val(data[0].Department);
+                            $('#userId').val(data[0].Id); // Actualizar el valor del userId
+                            $('#vacationBalance').val(data[0].VacationDays);
+                            $('#error-message').text('').hide();
+                            $('#name-select').hide();
+
+                            showSuccessAlert('Usuario encontrado con éxito.');
+                        } else {
+                            $('#name').prop('disabled', true).val('');
+                            $('#department').val('');
+                            $('#userId').val('');
+                            $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                            showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.');
+                            $('#name-select').hide();
+                        }
+                    },
+                    error: function (error) {
+                        $('#name').prop('disabled', true).val('');
+                        $('#department').val('');
+                        $('#userId').val('');
+                        $('#vacationBalance').val('0')
+                        $('#days').val('0')
+                        $('#error-message').text('No se encontraron usuarios con el valor de búsqueda proporcionado.').show();
+                        showErrorAlert('No se encontraron usuarios con el valor de búsqueda proporcionado.'); 
+                        $('#name-select').hide();
+                        console.error(error);
+                    }
+                });
+            });
+
+            $('#name-select').on('change', function () {
+                var selectedOption = $(this).find(':selected');
+                var selectedDepartment = selectedOption.data('department');
+                var selectedVacationBalance = selectedOption.data('vacationdays');
+                $('#department').val(selectedDepartment);
+                $('#userId').val($(this).val()); // Actualizar el valor del userId al cambiar la opción
+                $('#vacationBalance').val(selectedVacationBalance);
+            });
+        });
+    </script>
+
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres agregar los días?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

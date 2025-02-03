@@ -1,0 +1,101 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Position>;
+
+@{
+    ViewData["Title"] = "Listado de Puestos";
+    ViewBag.Titulo = "Gestión de Puestos";
+    ViewBag.NombreUbicacion = "Puestos";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Puestos</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="CreatePosition" asp-controller="Position">
+                <i class="fas fa-plus"></i> Crear Puesto
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Position_Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Department.Department_Name)
+                    </th>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <th>
+                            Acción
+                        </th>
+                        <th>
+                            Acción
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Position_Name
+                        </td>
+                        <td>
+                            @if (item.Department != null)
+                            {
+                                @item.Department.Department_Name
+                            }
+                            else
+                            {
+                                <p>No asignado</p>
+                            }
+                        </td>
+
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <td>
+                                <a asp-action="UpdatePosition" asp-route-id="@item.Id_Position" class="btn btn-info"><i class="fa fa-edit"></i> Editar</a>
+                            </td>
+
+                            <form id="deleteForm-@item.Id_Position" asp-controller="Position" asp-action="DeletePosition" asp-route-id="@item.Id_Position" method="post" onsubmit="confirmDelete(event, '@item.Id_Position')">
+                            <td>
+                                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar</button>
+                            </td>
+                            </form>
+                        }
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function confirmDelete(e, departmentId) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar este puesto?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const deleteForm = document.getElementById('deleteForm-' + departmentId);
+                    deleteForm.submit();
+                }
+            });
+        }
+    </script>
+}

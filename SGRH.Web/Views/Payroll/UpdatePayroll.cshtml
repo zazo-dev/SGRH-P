@@ -1,0 +1,208 @@
+﻿@model SGRH.Web.Models.ViewModels.UpdatePayrollViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Nóminas";
+    ViewBag.NombreUbicacion = "Registrar Nómina";
+    ViewData["Title"] = "Registrar Nómina";
+}
+
+<hr />
+<div class="container">
+    <form asp-action="UpdatePayroll" method="post" id="myForm" onsubmit="sendForm(event)">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Editar Nómina</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <input type="hidden" asp-for="Id_Payroll" />
+                        <div class="form-group">
+                            <label for="name">Nombre:</label>
+                            <input type="text" class="form-control" id="name" name="name" value="@Model.FullName" readonly />
+                            <select class="form-control" id="name-select" name="name" style="display:none;"></select>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <input asp-for="UserId" type="hidden" id="userId" name="userId" />
+                            <input asp-for="FullName" type="hidden" id="fullName" name="fullName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department">Departamento:</label>
+                            <input type="text" class="form-control" id="department" name="department" value="@Model.Department"  readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Salario Base:</label>
+                            <input asp-for="BaseSalary" type="number" step="any" class="form-control" id="baseSalary" name="baseSalary" value="@Model.BaseSalary" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Jornada Laboral:</label>
+                            <input type="text" class="form-control" id="periodName" name="periodName" value="@Model.PeriodName" readonly />
+                        </div>
+
+                        <div id="error-message" class="text-danger font-weight-bold" style="display: none;"></div>
+
+                        <div class="form-group">
+                            <label asp-for="PayrollPeriodId" class="control-label">Periodo de pago:</label>
+                            <select asp-for="PayrollPeriodId" class="form-control">
+                                <option value="">Seleccione un periodo de pago</option>
+                                @foreach (var period in Model.PayrollPeriods)
+                                {
+                                    <option value="@period.Id">@period.PeriodName</option>
+                                }
+                            </select>
+                            <div class="text-danger">@Html.ValidationMessageFor(model => model.PayrollPeriodId)</div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PayrollFrequency" class="control-label">Frecuencia de Nómina:</label>
+                            <select asp-for="PayrollFrequency" class="form-control">
+                                <option value="">Seleccione una frecuencia</option>
+                                <option value="Quincenal">Quincenal</option>
+                                <option value="Mensual">Mensual</option>
+                            </select>
+                            <div class="text-danger">@Html.ValidationMessageFor(model => model.PayrollFrequency)</div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OrdinarySalary" class="control-label">Salario Ordinario:</label>
+                            <input asp-for="OrdinarySalary" type="number" step="any" class="form-control" value="@Model.OrdinarySalary" id="OrdinarySalary" readonly />
+                            <span asp-validation-for="OrdinarySalary" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="OtHours" class="control-label">Cantidad de Horas Extra:</label>
+                            <input asp-for="OtHours" type="number" class="form-control" id="otHours" value="@Model.OtHours" readonly />
+                            <span asp-validation-for="OtHours" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OtHoursAmount" class="control-label">Monto total por Horas Extra:</label>
+                            <input asp-for="OtHoursAmount" type="number" step="any" class="form-control" id="otHoursAmount" value="@Model.OtHoursAmount" readonly />
+                            <span asp-validation-for="OtHoursAmount" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="EnfermedadMaternidad" class="control-label">CCSS S.E.M.:</label>
+                            <input asp-for="EnfermedadMaternidad" type="number" step="any" class="form-control" value="@Model.EnfermedadMaternidad" id="EnfermedadMaternidad" readonly />
+                            <span asp-validation-for="EnfermedadMaternidad" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IVM" class="control-label">CCSS I.V.M.:</label>
+                            <input asp-for="IVM" type="number" step="any" class="form-control" value="@Model.IVM" id="IVM" readonly />
+                            <span asp-validation-for="IVM" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BancoPopular" class="control-label">Banco Popular:</label>
+                            <input asp-for="BancoPopular" type="number" step="any" class="form-control" value="@Model.BancoPopular" id="BancoPopular" readonly />
+                            <span asp-validation-for="BancoPopular" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalDeductions" class="control-label">Monto Total Deducciones:</label>
+                            <input asp-for="TotalDeductions" type="number" step="any" class="form-control" value="@Model.TotalDeductions" id="TotalDeductions" readonly />
+                            <span asp-validation-for="TotalDeductions" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="GrossSalary" class="control-label">Salario Bruto:</label>
+                            <input asp-for="GrossSalary" type="number" step="any" class="form-control" value="@Model.GrossSalary" id="GrossSalary" readonly />
+                            <span asp-validation-for="GrossSalary" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NetSalary" class="control-label">Salario Neto:</label>
+                            <input asp-for="NetSalary" type="number" step="any" class="form-control" value="@Model.NetSalary" id="NetSalary" readonly />
+                            <span asp-validation-for="NetSalary" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <input type="submit" value="Editar" id="btnEdit" class="btn btn-info ml-2" />
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                    <button type="button" id="btnCalculate" class="btn btn-warning ml-2">Calcular</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $('#btnCalculate').on('click', function () {
+            var baseSalary = parseFloat(document.getElementById('baseSalary').value);
+            console.log(baseSalary);
+            if (isNaN(baseSalary) || baseSalary <= 0) {
+                showErrorAlert('Por favor, ingrese un salario base válido.');
+                return;
+            }
+
+            var payrollFrequency = $('#PayrollFrequency').val();
+            var ordinarySalary = (payrollFrequency === 'Quincenal') ? baseSalary / 2 : baseSalary;
+
+            $('#OrdinarySalary').val(ordinarySalary.toFixed(2));
+
+            var EnfermedadMaternidad = ordinarySalary * 0.055;
+            $('#EnfermedadMaternidad').val(EnfermedadMaternidad.toFixed(2));
+
+            var IVM = ordinarySalary * 0.0417;
+            var BancoPopular = ordinarySalary * 0.01;
+
+            $('#EnfermedadMaternidad').val(EnfermedadMaternidad.toFixed(2));
+            $('#IVM').val(IVM.toFixed(2));
+            $('#BancoPopular').val(BancoPopular.toFixed(2));
+
+            var totalDeductions = EnfermedadMaternidad + IVM + BancoPopular;
+            $('#TotalDeductions').val(totalDeductions.toFixed(2));
+
+            var otHoursAmount = parseFloat($('#otHoursAmount').val());
+            if (isNaN(otHoursAmount)) {
+                showErrorAlert('Por favor, ingrese un monto válido para las horas extra.');
+                return;
+            }
+
+            var grossSalary = ordinarySalary + otHoursAmount;
+            $('#GrossSalary').val(grossSalary.toFixed(2));
+
+            var netSalary = grossSalary - totalDeductions;
+            $('#NetSalary').val(netSalary.toFixed(2));
+
+            showSuccessAlert('Los cálculos se realizaron correctamente.');
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {                     
+            $('#OrdinarySalary').val(parseFloat('@Model.OrdinarySalary').toFixed(2));
+            $('#baseSalary').val(parseFloat('@Model.BaseSalary').toFixed(2));
+            $('#otHours').val(Math.floor(parseFloat('@Model.OtHours')));
+            $('#otHoursAmount').val(parseFloat('@Model.OtHoursAmount').toFixed(2));
+            $('#EnfermedadMaternidad').val(parseFloat('@Model.EnfermedadMaternidad').toFixed(2));             
+            $('#IVM').val(parseFloat('@Model.IVM').toFixed(2));             
+            $('#BancoPopular').val(parseFloat('@Model.BancoPopular').toFixed(2));             
+            $('#TotalDeductions').val(parseFloat('@Model.TotalDeductions').toFixed(2));             
+            $('#GrossSalary').val(parseFloat('@Model.GrossSalary').toFixed(2));             
+            $('#NetSalary').val(parseFloat('@Model.NetSalary').toFixed(2));
+        });        
+            $('#btnEdit').on('click', function () {                   
+                $('#myForm').submit();
+            });        
+    </script>
+
+
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres editar la nómina?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

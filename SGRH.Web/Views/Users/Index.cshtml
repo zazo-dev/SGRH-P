@@ -1,0 +1,362 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.User>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Usuarios</strong></h3>
+    </div>
+    
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="Create">
+                <i class="fas fa-plus"></i>
+                Registrar usuario
+             </a>
+        </p>
+
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Dni)
+                    </th>
+                    <th>
+                        Contacto
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BirthDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Age)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Department.Department_Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Position.Position_Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserType)
+                    </th>
+                    <th>
+                        Estado
+                    </th>
+
+                    @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                    {
+                        <th>Acción</th>
+                    }
+                    <th>Acción</th>
+                    <th>Acción</th>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <th>Acción</th>
+                    }
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Dni)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BirthDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Age)
+                        </td>
+                        <td>
+                            @if (item.Department != null)
+                            {
+                                @Html.DisplayFor(modelItem => item.Department.Department_Name)
+                            }
+                            else
+                            {
+                                <p>No asignado</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Position != null)
+                            {
+                                @Html.DisplayFor(modelItem => item.Position.Position_Name)
+                            }
+                            else
+                            {
+                                <p>No asignado</p>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserType)
+                        </td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "badge-success" : "badge-danger")">
+                                @(item.IsActive ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                        {
+                            <td>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#userStatusModal"
+                                        onclick="openModal('@item.Id', '@item.Name', @item.IsActive.ToString().ToLower())">
+                                    Cambiar Estado
+                                </button>
+                            </td>
+                        }
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info"><i class="fa fa-edit"></i> Editar</a>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#userDetailsModal-@item.Id">
+                                <i class="fa fa-eye"></i>
+                                 Ver Detalles
+                            </button>
+                        </td>
+
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <form id="deleteForm-@item.Id" asp-controller="Users" asp-action="Delete" asp-route-id="@item.Id" method="post">
+                            <td>
+                                <button type="button" class="btn btn-danger delete-btn" data-user-name="@item.Name" data-form-id="deleteForm-@item.Id">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </td>
+                            </form>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+@foreach (var user in Model)
+{
+    <div class="modal fade" id="userDetailsModal-@user.Id" tabindex="-1" role="dialog" aria-labelledby="userDetailsModalLabel-@user.Id" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center" id="userDetailsModalLabel-@user.Id"><strong>Detalles del Usuario</strong></h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Nombre:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.Name" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Apellido:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.LastName" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">DNI:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.Dni" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Fecha de Nacimiento:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@((user.BirthDate != null)  ? user.BirthDate?.ToString("dd/MM/yyyy") 
+                                                                                                                    : " No disponible") "/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Teléfono:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.PhoneNumber" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Correo Electrónico:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.Email" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Departamento:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@((user.Department != null) ? user.Department.Department_Name : "No asignado")" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Puesto:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@((user.Position != null) ? user.Position.Position_Name : "No asignado")" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Rol:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.UserType" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Fecha de Contratación:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@((user.HiredDate != null)  ? user.HiredDate?.ToString("dd/MM/yyyy")
+                                                                                                                    : " No disponible") " />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Salario Base:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@String.Format("{0:C}", user.BaseSalary)" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Jornada Laboral:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly value="@user.workPeriod.PeriodName" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="userStatusModal" tabindex="-1" aria-labelledby="userStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="userStatusModalLabel">Cambiar estado del usuario</h5>
+                <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+
+
+            <!-- Modal Body -->
+            <div class="modal-body text-center">
+                <!-- User Information -->
+                <p id="userName" class="fw-bold mb-1"></p>
+                <p id="userStatus" class="text-muted mb-3"></p>
+
+                <!-- Buttons for User Status Change -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <button id="activateBtn" class="btn btn-success btn-lg mx-2" onclick="changeStatus(true)">
+                        <i class="fas fa-check-circle"></i> Activar
+                    </button>
+                    <button id="deactivateBtn" class="btn btn-danger btn-lg" onclick="changeStatus(false)">
+                        <i class="fas fa-times-circle"></i> Desactivar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        // Delegation to ensure event binding even after elements are manipulated by DataTables
+        $(document).on('click', '.delete-btn', function (e) {
+            e.preventDefault();
+
+            var formId = $(this).data('form-id');
+            var userName = $(this).data('user-name');
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar a ' + userName + '?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const deleteForm = document.getElementById(formId);
+                    deleteForm.submit();
+                }
+            });
+        });
+
+        function openModal(userId, userName, isActive) {
+            $('#userName').text(`Usuario: ${userName}`);
+            $('#userStatus').text(`Estado actual: ${isActive ? "Activo" : "Inactivo"}`);
+
+            // Guarda el userId para usarlo en la solicitud POST
+            $('#userStatusModal').data('userId', userId);
+            $('#userStatusModal').data('userStatus', isActive);
+        }
+
+        function changeStatus(activate) {
+            var userId = $('#userStatusModal').data('userId');
+
+            if (!userId) {
+                showErrorAlert("El ID del usuario no está disponible.");
+                return;
+            }
+
+            var url = "/Users/ChangeUserStatus";
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: { id: userId, status: activate },
+                success: function (response) {
+                    if (response.success) {
+                        showSuccessAlert(response.message);
+
+                        // Agrega un retraso para la recarga después de mostrar la notificación
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000); // Espera 2 segundos antes de recargar
+                    } else {
+                        showErrorAlert(response.message);
+                    }
+                },
+                error: function (error) {
+                    showErrorAlert('Error al actualizar el estado del usuario');
+                }
+            });
+        }
+    </script>
+}

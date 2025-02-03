@@ -1,0 +1,83 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Settlement>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Gestión de Liquidaciones";
+    ViewData["NombreUbicacion"] = "Lista de Liquidaciones";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Liquidaciones</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Layoff.PersonalAction.User.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TotalSettlement)
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model ?? Enumerable.Empty<SGRH.Web.Models.Entities.Settlement>())
+                {
+                    <tr>
+                        <td>
+                            @item.Layoff.PersonalAction.User.FullName
+                        </td>
+                        <td>
+                            ₡@item.TotalSettlement.ToString("0.00", CultureInfo.InvariantCulture)
+                        </td>
+                        
+                        <form id="deleteForm-@item.Id" asp-action="DeleteSettlement" asp-route-id="@item.Id" method="post">
+                        <td>
+                            <button class="btn btn-danger" onclick="confirmDelete(event, '@item.Id')">Eliminar</button>
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary m-2" asp-action="SettlementDetails" asp-route-Settlementid="@item.Id">
+                                Detalles
+                            </a>
+                        </td>
+                        </form>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(e, settlementId) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar la liquidación?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const formId = 'deleteForm-' + settlementId;
+                    const deleteForm = document.getElementById(formId);
+                    deleteForm.submit();
+                }
+            });
+        }
+    </script>
+}

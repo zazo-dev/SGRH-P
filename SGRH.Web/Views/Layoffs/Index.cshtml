@@ -1,0 +1,157 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Layoff>
+
+@{
+    ViewData["Title"] = "Gestión de Despidos";
+    ViewData["NombreUbicacion"] = "Lista de Despidos";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Despidos</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="CreateLayoff" asp-controller="Layoffs">
+                <i class="fas fa-plus"></i> Registrar Despido
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.ActionType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonalAction.User.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.HasEmployerResponsibility)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DismissalDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DismissalCause)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegisteredBy)
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                    <th>
+                        Acción
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model ?? Enumerable.Empty<SGRH.Web.Models.Entities.Layoff>())
+                {
+                    <tr>
+                        <td>
+                            @item.PersonalAction.ActionType
+                        </td>
+                        <td>
+                            @if (item.PersonalAction != null && item.PersonalAction.User != null)
+                            {
+                                @item.PersonalAction.User.FullName
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </td>
+
+                        <td>
+                            @(item.HasEmployerResponsibility ? "Sí" : "No")
+                        </td>
+                        <td>
+                            @item.DismissalDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.DismissalCause
+                        </td>
+                        <td>
+                            @item.RegisteredBy
+                        </td>
+                        @if (!item.HasProcessed)
+                        {
+                            <td>
+                           
+                                <a class="btn btn-warning" asp-action="CreateSettlement" asp-controller="Settlements" asp-route-layoffId="@item.Id">
+                                    Procesar Liquidación
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-info" asp-action="EditLayoff" asp-route-layoffId="@item.Id">
+                                    Editar
+                                </a>
+                            </td>
+
+                            <form id="deleteForm-@item.Id" asp-action="DeleteLayoff" asp-route-layoffId="@item.Id" method="post">
+                            <td><button class="btn btn-danger " onclick="confirmDelete(event, '@item.Id', '@(item.PersonalAction?.User?.FullName ?? "")')">Eliminar</button></td>       
+                             </form>
+                        }
+                        else
+                        {
+                            <td>
+                                <p>
+                                    <span class="badge badge-success">La liquidación fue procesada</span>
+                                </p>
+                            </td>
+
+                            <td>
+                                <p>
+                                    <span class="badge badge-danger">No es posible editar</span>
+                                </p>
+                            </td>
+
+                            <td>
+                                <p>
+                                    <span class="badge badge-danger">No es posible eliminar</span>
+                                </p>
+                            </td>
+                        } 
+                        <td>
+                            <a class="btn btn-secondary m-2" asp-action="LayoffDetails" asp-route-layoffId="@item.Id">
+                                Detalles
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(e, layoffId, fullName) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres eliminar el despido de ' + fullName + '?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const formId = 'deleteForm-' + layoffId;
+                    const deleteForm = document.getElementById(formId);
+                    deleteForm.submit();
+                }
+            });
+        }
+    </script>
+}

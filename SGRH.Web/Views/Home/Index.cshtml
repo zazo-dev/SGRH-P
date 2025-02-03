@@ -1,0 +1,416 @@
+﻿@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "Dashboard Personal";
+    ViewBag.Titulo = "Dashboard Personal";
+    ViewBag.NombreUbicacion = "Dashboard Personal";
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user?.Id;
+}
+<hr />
+<div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="attendanceBox">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3 id="attendanceCount">Loading...</h3>
+                <p>Asistencias</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-calendar"></i>
+            </div>
+            <a asp-controller="Attendance" asp-action="MyAttendances" asp-route-userId="@userId" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="absenceBox">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3 id="absenceCount">Loading...</h3>
+                <p>Ausencias</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-minus-circled"></i>
+            </div>
+            <a asp-controller="Attendance" asp-action="MyAbsences"  asp-route-userId="@userId" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="vacationBox">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="BalanceCount">Loading...</h3>
+                <p>Saldo de vacaciones restantes</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-map"></i>
+            </div>
+            <a asp-controller="Vacations" asp-action="VacationsBalance" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="daysTakenBox">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="vacationDaysTaken">Loading...</h3>
+                <p>Días de vacaciones tomados</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-checkmark"></i>
+            </div>
+            <a asp-controller="Vacations" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="otCountBox">
+        <!-- small box -->
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3 id="otCount">Loading...</h3>
+                <p>Horas extra aprobadas</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-time"></i>
+            </div>
+            <a asp-controller="Overtime" asp-action="MyOvertimes" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="otAmountBox">
+        <!-- small box -->
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3 id="otAmount">Loading...</h3>
+                <p>Monto acumulado horas extra </p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i>
+            </div>
+            <a asp-controller="Overtime" asp-action="Index" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="payrollCountBox">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="payrollCount">Loading...</h3>
+                <p>Pagos recibidos</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-calculator"></i>
+            </div>
+            <a asp-controller="Payroll" asp-action="PersonalPayrolls" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <!-- ./col -->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12" id="payrollAmountBox">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="payrollAmount">Loading...</h3>
+                <p>Monto acumulado de nómina</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-cash"></i>
+            </div>
+            <a asp-controller="Payroll" asp-action="PersonalPayrolls" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6">
+        <div class="card" style="height: 400px;">
+            <div class="card-header">
+                <h3 class="card-title">Monto total de horas extra por mes</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="overtimeChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6">
+        <div class="card" style="height: 400px;">
+            <div class="card-header">
+                <h3 class="card-title">Monto total de nómina por mes</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="payrollChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="warningCountBox">
+        <!-- small box -->
+        <div class="small-box bg-danger id=">
+            <div class="inner">
+                <h3 id="warningCount">Loading...</h3>
+                <p>Mis amonestaciones</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-android-warning"></i>
+            </div>
+            <a asp-controller="Warning" asp-action="MyWarnings" asp-route-userId="@userId" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="dossierCountBox">
+        <!-- small box -->
+        <div class="small-box bg-secondary id=">
+            <div class="inner">
+                <h3 id="dossierCount">Loading...</h3>
+                <p>Documentos en Expediente</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-folder"></i>
+            </div>
+            <a asp-controller="Dossiers" asp-action="MyDossier" asp-route-userId="@userId" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Main row -->
+<div class="row">
+
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var userId = '@userId'; // Obtener el ID de usuario
+            $.ajax({
+                url: '/Attendance/GetAttendances',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#attendanceCount').text(data.length); // Actualizar el número de asistencias
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Attendance/GetAbsences',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#absenceCount').text(data.length); // Actualizar el número de ausencias
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Vacations/GetBalance',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#BalanceCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Vacations/GetVacationsDayTaken',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#vacationDaysTaken').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Overtime/GetOvertimes',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#otCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Overtime/GetOvertimesAmount',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    var formattedAmount = data.toLocaleString('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 });
+                    $('#otAmount').text(formattedAmount);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Overtime/GetMonthlyOvertimeAmount',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    var ctx = document.getElementById('overtimeChart').getContext('2d');
+                    var chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Monto acumulado de horas extra',
+                            data: [],
+                            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                            borderColor: 'rgba(0, 123, 255, 1)', 
+                            borderWidth: 1
+                        }]
+                    };
+
+                    data.forEach(function (item) {
+                        chartData.labels.push(item.month);
+                        chartData.datasets[0].data.push(item.amount);
+                    });
+
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            aspectRatio: 2,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value, index, values) {
+                                            return '₡' + value.toFixed(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+
+            $.ajax({
+                url: '/Warning/GetWarnings',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#warningCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Payroll/GetPayrollCount',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#payrollCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Payroll/GetPayrollAmount',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    var formattedAmount = data.toLocaleString('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 });
+                    $('#payrollAmount').text(formattedAmount);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Payroll/GetMonthlyPayrollAmount',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    var ctx = document.getElementById('payrollChart').getContext('2d');
+                    var chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Monto acumulado de nómina',
+                            data: [],
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)', 
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    data.forEach(function (item) {
+                        chartData.labels.push(item.month);
+                        chartData.datasets[0].data.push(item.amount);
+                    });
+
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            aspectRatio: 2,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value, index, values) {
+                                            return '₡' + value.toFixed(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Dossiers/GetDocumentsInDossier',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#dossierCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+        });
+    </script>
+   
+}

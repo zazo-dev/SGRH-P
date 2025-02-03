@@ -1,0 +1,161 @@
+﻿@model SGRH.Web.Models.DossierViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Editar Expediente</strong></h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Edit" enctype="multipart/form-data" onsubmit="sendForm(event)" id="myForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="DocumentType" class="control-label">Tipo de Documento:</label>
+                            <select asp-for="DocumentType" class="form-control">
+                                <option value="">Seleccione un tipo de documento</option>
+                                @foreach (var type in Enum.GetValues(typeof(SGRH.Web.Enums.DocumentType)))
+                                {
+                                    <option value="@type">@type.ToString()</option>
+                                }
+                            </select>
+                            <span asp-validation-for="DocumentType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label">Descripción:</label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Documentation" class="control-label">Documentos (opcional):</label>
+                            <div class="custom-file">
+                                <input asp-for="Documentation" type="file" class="custom-file-input" id="customFile" multiple onchange="updateFileNameLabel(this)">
+                                <label class="custom-file-label" for="customFile" id="customFileLabel">Seleccionar archivo(s)</label>
+                            </div>
+                            <span asp-validation-for="Documentation" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="card card-info card-lg">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Documentos Actuales: </h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table" id="documentTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre de archivo</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.Documentations != null && Model.Documentations.Any())
+                                                {
+                                                    foreach (var document in Model.Documentations)
+                                                    {
+                                                        <tr>
+                                                            <td>@document.FileName</td>
+                                                            <td class="text-right py-0 align-middle">
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <a href="@Url.Action("DownloadDocument", "Dossiers", new { documentId = document.Id })" class="btn btn-info"><i class="fas fa-save"></i></a>
+                                                                    <button class="btn btn-danger delete-document" data-document-id="@document.Id"><i class="fas fa-trash"></i></button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="3">No hay documentos adjuntos.</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                                <!-- /.card -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input asp-for="Date" class="form-control" type="hidden" />
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Editar" class="btn btn-info" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres editar el expediente?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+    <script>
+        function updateFileNameLabel(input) {
+            var fileName = input.files.length > 1 ? input.files.length + ' archivos seleccionados' : input.files[0].name;
+            document.getElementById('customFileLabel').innerText = fileName;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.delete-document', function (e) {
+                e.preventDefault(); // Evitar que el formulario se envíe
+
+                var documentId = $(this).data('document-id');
+                var url = '@Url.Action("DeleteDocument", "Dossiers")';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { documentId: documentId },
+                    success: function (data) {
+                        if (data.success) {
+                            $('#documentTable').load(location.href + ' #documentTable');
+                            showSuccessAlert(data.message);
+                        } else {
+                            showErrorAlert(data.message);
+                        }
+                    },
+                    error: function () {
+                        showErrorAlert('Error inesperado al eliminar el documento.');
+                    }
+                });
+            });
+        });
+
+    </script>
+
+
+}

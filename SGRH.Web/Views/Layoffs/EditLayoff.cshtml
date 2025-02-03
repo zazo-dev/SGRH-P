@@ -1,0 +1,83 @@
+﻿@model SGRH.Web.Models.ViewModels.UpdateLayoffViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Despidos";
+    ViewBag.NombreUbicacion = "Editar Despido";
+    ViewData["Title"] = "Editar Despido";
+}
+
+<hr />
+<div class="container">
+    <div class="row justify-content-center"> 
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Editar Despido</strong></h3>
+                </div>
+                <form asp-action="EditLayoff" method="post" onsubmit="sendForm(event)" id="myForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-md-6">
+
+                                <input type="hidden" asp-for="LayoffId">
+                                <input type="hidden" asp-for="RegisteredBy">
+
+                                <div class="form-group">
+                                    <label asp-for="PersonalAction.User.FullName" class="control-label">Nombre del Empleado:</label>
+                                    <input asp-for="PersonalAction.User.FullName" class="form-control" disabled />
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="DismissalDate" class="control-label">Fecha de Despido:</label>
+                                    <input asp-for="DismissalDate" type="date" class="form-control" />
+                                    <span asp-validation-for="DismissalDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="DismissalCause" class="control-label">Causa del Despido:</label>
+                                    <input asp-for="DismissalCause" class="form-control" />
+                                    <span asp-validation-for="DismissalCause" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="HasEmployerResponsibility" class="control-label">Responsabilidad Patronal:</label>
+                                    <div class="form-check">
+                                        <input asp-for="HasEmployerResponsibility" class="form-check-input" />
+                                    </div>
+                                    <span asp-validation-for="HasEmployerResponsibility" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <input type="submit" value="Guardar Cambios" class="btn btn-success ml-2" />
+                            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro que quieres guardar los cambios?',
+                icon: 'question',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const myForm = document.getElementById('myForm');
+                    myForm.submit();
+                }
+            });
+        }
+    </script>
+}

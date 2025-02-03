@@ -1,0 +1,731 @@
+﻿﻿@using Microsoft.AspNetCore.Identity
+@using SGRH.Web.Models.Entities
+@inject UserManager<User> UserManager
+
+@{
+    string currentAction = ViewContext.RouteData.Values["action"].ToString();
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user?.Id;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SGRH | Sistema de Gestión de Recursos Humanos</title>
+
+
+    <!-- SweetAlert2
+    <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">    -->
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/fontawesome.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="~/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="~/plugins/summernote/summernote-bs4.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+    <!-- Dropzone style -->
+    <link rel="stylesheet" href="~/plugins/dropzone/min/dropzone.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="~/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a  class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+               
+                <!-- Menú desplegable de notificaciones -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                        {
+                            <span class="badge badge-warning navbar-badge">@ViewBag.Notifications.Count</span>
+                        }
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">Notificaciones</span>
+                        <div class="dropdown-divider"></div>
+
+                        @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                        {
+                            @foreach (var notification in ViewBag.Notifications)
+                            {
+                                <a href="#" class="dropdown-item">
+                                    <div>
+                                        <h6 class="mb-1"><i class="fas fa-info-circle mr-2 text-info"></i>@notification.Reason</h6>
+                                        <small class="text-muted">@notification.Observations</small>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="dropdown-item text-muted">No hay notificaciones</span>
+                        }
+
+                        <!-- Enlace para ver todas las notificaciones -->
+                        <a href="@Url.Action("MyWarnings", "Warning")" class="dropdown-item dropdown-footer">Ver todas las amonestaciones</a>
+                    </div>
+                </li>
+
+                <!-- Enlace para iniciar sesión o cerrar sesión -->
+                <li class="nav-item">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form id="form-logout" method="post" asp-controller="Account" asp-action="Logout">
+                            <button type="submit" style="display: none;"></button>
+                        </form>
+                        <a href="javascript:void(0);" onclick="document.getElementById('form-logout').submit();" class="nav-link">Cerrar Sesión</a>
+                    }
+                    else
+                    {
+                        <!-- Si el usuario no está autenticado, muestra el enlace para iniciar sesión -->
+                        <a href="/Account/Login" class="nav-link">Iniciar Sesión</a>
+                    }
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="brand-link">
+                <img src="~/dist/img/AdminLTELogo.png" alt="SGRH" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">SGRH</span>
+            </a>
+            @* @if (User.Identity.IsAuthenticated || TempData["ErrorMessage"] != null) *@
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="info">
+                            @if (UserManager != null){
+                                if (user != null)
+                                {
+                                    <a class="nav-link" title="Manage"  href="@Url.Action("Profile", "Users", new { id = @user.Id })">
+                                        Hola <strong>@user.Name</strong>!
+                                    </a>
+                                }
+                            }
+                        </div>
+                    </div>
+                
+
+                <!-- SidebarSearch Form -->
+                <div class="form-inline">
+                    <div class="input-group" data-widget="sidebar-search">
+                        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-sidebar">
+                                <i class="fas fa-search fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+                        <li class="nav-item menu-open">
+
+
+                            @if (User.IsInRole("Empleado"))
+                            {
+                                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link active">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Personal
+                                    </p>
+                                </a>
+                            }
+
+                            @if (User.IsInRole("SupervisorDpto"))
+                            {
+                                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link @(currentAction == "Index" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Personal
+                                    </p>
+                                </a>
+                                <a asp-area="" asp-controller="Home" asp-action="SupervisorDashboard" class="nav-link @(currentAction == "SupervisorDashboard" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Supervisor Departamento
+                                    </p>
+                                </a>
+                            }
+
+                            @if (User.IsInRole("SupervisorRH"))
+                            {
+                                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link @(currentAction == "Index" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Personal
+                                    </p>
+                                </a>
+                                <a asp-area="" asp-controller="Home" asp-action="RhDashboard" class="nav-link @(currentAction == "RhDashboard" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Supervisor Recursos Humanos
+                                    </p>
+                                </a>
+                            }
+
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link @(currentAction == "Index" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Personal
+                                    </p>
+                                </a>
+                                <a asp-area="" asp-controller="Home" asp-action="SupervisorDashboard" class="nav-link @(currentAction == "SupervisorDashboard" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Supervisor Departamento
+                                    </p>
+                                </a>
+                                <a asp-area="" asp-controller="Home" asp-action="RhDashboard" class="nav-link @(currentAction == "RhDashboard" ? "active" : "")">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>
+                                        Dashboard Supervisor Recursos Humanos
+                                    </p>
+                                </a>
+                            }
+                        </li>
+
+
+                        <li class="nav-header">Módulos</li>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="" asp-controller="Users" asp-action="Index" class="nav-link">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>
+                                        Gestión de Usuarios
+                                        <!-- <span class="right badge badge-danger">New</span> -->
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="Actions" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>
+                                    Gestión de Acciones
+                                    <i class="fas fa-angle-left right"></i>
+                                    <!--  <span class="badge badge-info right">4</span> -->
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Vacaciones</p>
+                                        <i class="fas fa-angle-left right"></i>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a asp-controller="Vacations" asp-action="MyVacationsRequests" class="nav-link">
+                                                <i class="far fa-dot-circle nav-icon"></i>
+                                                <p>Mis solicitudes</p>
+                                            </a>
+                                        </li>
+
+                                        @if(User.IsInRole("SupervisorRH") || User.IsInRole("Administrador"))
+                                        {
+                                            <li class="nav-item">
+                                                <a asp-controller="Vacations" asp-action="Index" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Listado de solicitudes</p>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        <li class="nav-item">
+                                            <a asp-controller="Vacations" asp-action="RequestVacation" class="nav-link">
+                                                <i class="far fa-dot-circle nav-icon"></i>
+                                                <p>Solicitud de Vacaciones</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Vacations" asp-action="VacationsBalance" class="nav-link">
+                                                <i class="far fa-dot-circle nav-icon"></i>
+                                                <p>Consultar saldo de vacaciones</p>
+                                            </a>
+                                        </li>
+
+                                          @if (!User.IsInRole("Empleado"))
+                                          {
+                                             <li class="nav-item">
+                                                  <a asp-controller="Vacations" asp-action="VacationsManagement" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Gestión de Vacaciones</p>
+                                                  </a>
+                                             </li>
+                                          }
+
+
+                                        @if (User.IsInRole("SupervisorRH") || User.IsInRole("Administrador")) {
+                                            <li class="nav-item">
+                                                <a asp-controller="Vacations" asp-action="AddVacations" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Añadir días de vacaciones</p>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Horas Extra</p>
+                                        <i class="fas fa-angle-left right"></i>
+                                    </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                            <a asp-controller="Overtime" asp-action="MyOvertimes" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Mis solicitudes</p>
+                                                </a>
+                                            </li>
+                                        @if (User.IsInRole("SupervisorRH") || User.IsInRole("Administrador"))
+                                        {
+                                            <li class="nav-item">
+                                                <a asp-controller="Overtime" asp-action="Index" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Listado de solicitudes</p>
+                                                </a>
+                                            </li>
+                                        }
+
+                                            <li class="nav-item">
+                                                <a asp-controller="Overtime" asp-action="RequestOvertime" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Solicitud de Horas Extras</p>
+                                                </a>
+                                            </li>
+                                        @if (!User.IsInRole("Empleado"))
+                                            {
+                                            <li class="nav-item">
+                                                    <a asp-controller="Overtime" asp-action="OvertimeManagement" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Gestión de Horas Extras</p>
+                                                </a>
+                                            </li>
+                                            }
+                                        </ul>
+                                </li>
+
+                                @if (User.IsInRole("SupervisorRH") || User.IsInRole("Administrador")) {
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Despidos</p>
+                                            <i class="fas fa-angle-left right"></i>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a asp-controller="Layoffs" asp-action="Index" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Listado de despidos</p>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a asp-controller="Layoffs" asp-action="CreateLayoff" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Registrar despido</p>
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                }
+                                @if (User.IsInRole("SupervisorRH") || User.IsInRole("Administrador"))
+                                {
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Liquidaciones</p>
+                                            <i class="fas fa-angle-left right"></i>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a asp-controller="Settlements" asp-action="Index" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Listado de liquidaciones</p>
+                                                </a>
+                                            </li>                                  
+                                        </ul>
+                                    </li>
+                                }
+
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Amonestaciones</p>
+                                        <i class="fas fa-angle-left right"></i>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a asp-controller="Warning" asp-action="MyWarnings" class="nav-link">
+                                                <i class="far fa-dot-circle nav-icon"></i>
+                                                <p>Mis amonestaciones</p>
+                                            </a>
+                                        </li>
+                                        @if (!User.IsInRole("Empleado"))
+                                        {
+                                            <li class="nav-item">
+                                                <a asp-controller="Warning" asp-action="Index" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Listado de amonestaciones</p>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a asp-controller="Warning" asp-action="Create" class="nav-link">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Crear Amonestacion</p>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="PersonalAction" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Historial</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fa fa-regular fa-calendar nav-icon"></i>
+                                <p>Gestion de Asistencia</p>
+                                <i class="fas fa-angle-left right"></i>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Attendance" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Listar Asistencias</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Attendance" asp-action="RegisterAttendance" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Registrar Asistencia</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Attendance" asp-action="ViewAbsences" class=" nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Listar Ausencias</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Attendance" asp-action="RegisterAbsence" class=" nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Registrar Ausencia</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fa fa-archive nav-icon" aria-hidden="true"></i>
+                                <p>Gestion de Expedientes</p>
+                                <i class="fas fa-angle-left right"></i>
+                            </a>
+                            <ul class="nav nav-treeview">
+
+                                <li class="nav-item">
+                                    <a asp-controller="Dossiers" asp-action="MyDossier" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Mi Expediente</p>
+                                    </a>
+                                </li>
+
+                                @if (User.IsInRole("Administrador") || User.IsInRole("SupervisorRH"))
+                                {
+                                    <li class="nav-item">
+                                        <a asp-controller="Dossiers" asp-action="Index" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Lista de Expedientes</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a asp-controller="Dossiers" asp-action="Create" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Crear Expediente</p>
+                                        </a>
+                                    </li>
+                                }
+                                    
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="Payroll" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>
+                                    Gestión de Nóminas
+                                    <i class="fas fa-angle-left right"></i>
+                                    <!-- <span class="right badge badge-danger">New</span> -->
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Payroll" asp-action="PersonalPayrolls" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Mis Nóminas</p>
+                                    </a>
+                                </li>                               
+                                @if (User.IsInRole("SupervisorRH") || User.IsInRole("Administrador")) {
+                                    <li class="nav-item">
+                                        <a asp-controller="Payroll" asp-action="Index" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Listar Nóminas</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Payroll" asp-action="CreatePayroll" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Registrar Nómina</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Payroll" asp-action="GeneratePeriods" class=" nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Generar periodos de pago</p>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>
+                                    Mantenimiento
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Department" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Departamentos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Position" asp-action="Index" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Puestos</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                        }
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+                
+            </div>
+            <!-- /.sidebar -->
+            @* } *@
+        </aside>
+        
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">@ViewBag.Titulo</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a asp-area="" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                                <li class="breadcrumb-item active">@ViewBag.NombreUbicacion</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2023-2024</strong>
+            Derechos Reservados.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    <script src="~/plugins/dropzone/min/dropzone.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- jQuery -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="~/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- Bootstrap 4 -->
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    <script src="~/plugins/chart.js/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Sparkline -->
+    <script src="~/plugins/sparklines/sparkline.js"></script>
+    <!-- JQVMap -->
+    <script src="~/plugins/jqvmap/jquery.vmap.min.js"></script>
+    <script src="~/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="~/plugins/jquery-knob/jquery.knob.min.js"></script>
+    <!-- daterangepicker -->
+    <script src="~/plugins/moment/moment.min.js"></script>
+    <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Summernote -->
+    <script src="~/plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/plugins/jszip/jszip.min.js"></script>
+    <script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- jquery-validation -->
+    <script src="~/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="~/plugins/jquery-validation/additional-methods.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/dist/js/adminlte.js"></script>
+    <!-- AdminLTE for demo purposes 
+    <script src="~/dist/js/demo.js"></script> -->
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="~/dist/js/pages/dashboard.js"></script>
+    @RenderSection("Scripts", required: false) <!-- Sección para scripts personalizados -->
+    <script>
+        $(function () {
+            $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Función para mostrar una alerta de éxito
+        function showSuccessAlert(message) {
+            Swal.fire({
+                title: 'Éxito',
+                text: message,
+                icon: 'success',
+                timer: 5000,
+                showConfirmButton: false
+            });
+        }
+
+        // Función para mostrar una alerta de error
+        function showErrorAlert(message) {
+            Swal.fire({
+                title: 'Error',
+                text: message,
+                icon: 'error'
+            });
+        }
+
+        // Llamadas a las funciones desde TempData
+        var successMessage = '@Html.Raw(TempData["SuccessMessage"])';
+        var errorMessage = '@Html.Raw(TempData["ErrorMessage"])';
+
+
+        if (successMessage) {
+            showSuccessAlert(successMessage);
+        }
+
+        if (errorMessage) {
+            showErrorAlert(errorMessage);
+        }
+    </script>
+
+</body>
+</html>

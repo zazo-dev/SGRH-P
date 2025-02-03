@@ -1,0 +1,105 @@
+﻿@model SGRH.Web.Models.ViewModels.DetailsPayrollViewModel
+
+@{
+    ViewBag.Titulo = "Gestión de Nóminas";
+    ViewBag.NombreUbicacion = "Registrar Nómina";
+    ViewData["Title"] = "Registrar Nómina";
+}
+
+<hr />
+<div class="container">
+    <form asp-action="#">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center"><strong>Detalles de la Nómina</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <input type="hidden" asp-for="Id_Payroll" />
+                        <div class="form-group">
+                            <label for="name">Nombre:</label>
+                            <input type="text" class="form-control" id="name" name="name" value="@Model.FullName" readonly />
+                            <select class="form-control" id="name-select" name="name" style="display:none;"></select>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <input asp-for="UserId" type="hidden" id="userId" name="userId" />
+                            <input asp-for="FullName" type="hidden" id="fullName" name="fullName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department">Departamento:</label>
+                            <input type="text" class="form-control" name="department" value="@Model.Department" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Salario Base:</label>
+                            <input asp-for="BaseSalary" type="text" class="form-control" name="baseSalary" value="@Model.BaseSalary" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Jornada Laboral:</label>
+                            <input type="text" class="form-control" name="periodName" value="@Model.PeriodName" readonly />
+                        </div>
+
+                        <div id="error-message" class="text-danger font-weight-bold" style="display: none;"></div>
+
+                        <div class="form-group">
+                            <label class="control-label">Periodo de pago:</label>
+                            <input type="text" class="form-control" value="@Model.PayrollPeriod.PeriodName" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="PayrollFrequency" class="control-label">Frecuencia de Nómina:</label>
+                            <input asp-for="PayrollFrequency" type="text" class="form-control" value="@Model.PayrollFrequency" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OrdinarySalary" class="control-label">Salario Ordinario:</label>
+                            <input asp-for="OrdinarySalary" type="text" class="form-control" value="@Model.OrdinarySalary" readonly />
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="OtHours" class="control-label">Cantidad de Horas Extra:</label>
+                            <input asp-for="OtHours" type="text" class="form-control" id="otHours" value="@Model.OtHours" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="OtHoursAmount" class="control-label">Monto total por Horas Extra:</label>
+                            <input asp-for="OtHoursAmount" type="text" class="form-control" value="@Model.OtHoursAmount" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="EnfermedadMaternidad" class="control-label">CCSS S.E.M.:</label>
+                            <input asp-for="EnfermedadMaternidad" type="text" class="form-control" value="@Model.EnfermedadMaternidad" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IVM" class="control-label">CCSS I.V.M.:</label>
+                            <input asp-for="IVM" type="text" class="form-control" value="@Model.IVM" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BancoPopular" class="control-label">Banco Popular:</label>
+                            <input asp-for="BancoPopular" type="text" class="form-control" value="@Model.BancoPopular" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalDeductions" class="control-label">Monto Total Deducciones:</label>
+                            <input asp-for="TotalDeductions" type="text" class="form-control" value="@Model.TotalDeductions" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="GrossSalary" class="control-label">Salario Bruto:</label>
+                            <input asp-for="GrossSalary" type="text" class="form-control" value="@Model.GrossSalary" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NetSalary" class="control-label">Salario Neto:</label>
+                            <input asp-for="NetSalary" type="text" class="form-control" value="@Model.NetSalary" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

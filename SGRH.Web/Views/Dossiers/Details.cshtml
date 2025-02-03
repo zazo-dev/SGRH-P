@@ -1,0 +1,127 @@
+﻿@model SGRH.Web.Models.DossierDetailsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<hr />
+<div class="container">
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center"><strong>Detalles de Expediente</strong></h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Tipo de Documento:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" readonly value="@Model.DocumentType" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Descripción:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" readonly value="@Model.Description" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Fecha:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" readonly value="@Model.Date.ToShortDateString()" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        
+                        <div class="col-sm-12">
+                            <div class="card card-info card-lg">
+                                <div class="card-header">
+                                    <h3 class="card-title">Documentos Adjuntos: </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <table class="table" id="documentTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre de archivo</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Document != null && Model.Document.Any())
+                                            {
+                                                foreach (var document in Model.Document)
+                                                {
+                                                    <tr>
+                                                        <td>@document.FileName</td>
+                                                        <td class="text-right py-0 align-middle">
+                                                            <div class="btn-group btn-group-sm">
+                                                                <a href="@Url.Action("DownloadDocument", "Dossiers", new { documentId = document.Id })" class="btn btn-info"><i class="fas fa-save"></i></a>
+                                                                <button class="btn btn-danger delete-document" data-document-id="@document.Id"><i class="fas fa-trash"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="3">No hay documentos adjuntos.</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-secondary" asp-action="Index">Volver a la Lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.delete-document', function (e) {
+                e.preventDefault(); // Evitar que el formulario se envíe
+
+                var documentId = $(this).data('document-id');
+                var url = '@Url.Action("DeleteDocument", "Dossiers")';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { documentId: documentId },
+                success: function (data) {
+                    if (data.success) {
+                        $('#documentTable').load(location.href + ' #documentTable');
+                        showSuccessAlert(data.message);
+                    } else {
+                        showErrorAlert(data.message);
+                    }
+                },
+                error: function () {
+                    showErrorAlert('Error inesperado al eliminar el documento.');
+                }
+            });
+        });
+    });
+
+    </script>
+}

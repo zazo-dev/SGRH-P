@@ -1,0 +1,124 @@
+﻿@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "Dashboard Supervisor";
+    ViewBag.Titulo = "Dashboard Supervisor";
+    ViewBag.NombreUbicacion = "Dashboard Supervisor";
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user?.Id;
+}
+
+<hr/>
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="userBox">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3 id="usersCount">Loading...</h3>
+                <p>Empleados a cargo</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-people"></i>
+            </div>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="warningsBox">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3 id="warningsCount">Loading...</h3>
+                <p>Amonestaciones realizadas</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-android-warning"></i>
+            </div>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="vacationsBox">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3 id="vacationsCount">Loading...</h3>
+                <p>Vacaciones pendientes de aprobar</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-map"></i>
+            </div>
+            <a asp-controller="Vacations" asp-action="VacationsManagement" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12" id="OtBox">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="OtCount">Loading...</h3>
+                <p>Horas Extra pendientes de aprobar</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-time"></i>
+            </div>
+            <a asp-controller="Overtime" asp-action="OvertimeManagement" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+<!-- Main row -->
+<div class="row">
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var userId = '@userId'; // Obtener el ID de usuario
+            $.ajax({
+                url: '/Users/GetEmployeeCountByDepartment',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#usersCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Vacations/GetPendingVacationsCountForSupervisor',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#vacationsCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Overtime/GetPendingOTCountForSupervisor',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#OtCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+
+            $.ajax({
+                url: '/Warning/GetWarningsBySupervisor',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (data) {
+                    $('#warningsCount').text(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.Attendance>
+
+@{
+    ViewData["Title"] = "Asistencias";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Listado de Asistencias</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <a class="btn btn-success" asp-action="RegisterAttendance">
+                <i class="fas fa-plus"></i> Registrar Asistencia
+            </a>
+        </p>
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Usuario
+                    </th>
+                    <th>
+                        Fecha
+                    </th>
+                    <th>
+                        Hora de Entrada
+                    </th>
+                    <th>
+                        Hora de Salida
+                    </th>
+                    <th>
+                        Duración
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var attendance in Model)
+                {
+                    <tr>
+                        <td>
+                            @attendance.User.FullName
+                        </td>
+                        <td>
+                            @attendance.Date.ToShortDateString()
+                        </td>
+                        <td>
+                            @attendance.EntryTime?.ToString("hh:mm tt")
+                        </td>
+                        <td>
+                            @if(attendance.ExitTime == null)
+                            {
+                                <span class="text-danger">No registró la salida</span>
+                            }
+
+                            @attendance.ExitTime?.ToString("hh:mm tt")
+                        </td>
+                        <td>
+                            @if (attendance.TotalTime != null)
+                            {
+                                var totalSeconds = (int)attendance.TotalTime.TotalSeconds;
+                                var hours = totalSeconds / 3600;
+                                var minutes = (totalSeconds % 3600) / 60;
+                                var seconds = totalSeconds % 60;
+
+                                @($"{hours:D2}h:{minutes:D2}m:{seconds:D2}s")
+                            }
+                            else
+                            {
+                                <span class="text-danger">No registrado</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<SGRH.Web.Models.Entities.PersonalAction>
+
+@{
+    ViewData["Title"] = "Historial de Acciones Personales";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-center"><strong>Historial de Acciones Personales</strong></h3>
+    </div>
+
+    <div class="card-body">
+        
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Fecha de Registro
+                    </th>
+                    <th>
+                        Tipo de Acción
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var action in Model)
+                {
+                    <tr>
+                        <td>
+                            @action.CreatedDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @action.ActionType
+                        </td>
+                       <td>
+                            @action.Description
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="form-group">
+            <a href="javascript:history.back()" class="btn btn-secondary ml-2">Volver</a>
+        </div>
+    </div>
+</div>
